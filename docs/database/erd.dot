@@ -1,0 +1,32 @@
+digraph ERD {
+  rankdir=LR;
+  graph [fontname="Helvetica", fontsize=11, labelloc="t", label="Staj Günlüğü ve Gelişim Takip Uygulaması — ER Diyagramı (v1)\n11 uygulama tablosu", nodesep=0.5, ranksep=1.0, bgcolor="white"];
+  node [shape=record, fontname="Helvetica", fontsize=10, style="filled", fillcolor="#eef2f7", color="#1f3a5f"];
+  edge [fontname="Helvetica", fontsize=9, color="#1f3a5f", arrowhead=crow, arrowtail=none, dir=both, arrowsize=0.8];
+
+  // Konum referans tablolari
+  Country   [label="{AppCountries|Id (PK)\lCode (U)\lName\lIsActive\l}", fillcolor="#e6f0e6"];
+  Province  [label="{AppProvinces|Id (PK)\lCountryId (FK)\lName\lIsActive\l}", fillcolor="#e6f0e6"];
+  District  [label="{AppDistricts|Id (PK)\lProvinceId (FK)\lName\lIsActive\l}", fillcolor="#e6f0e6"];
+
+  // Ana akis
+  Workplace [label="{AppWorkplaces|Id (PK)\lName\lDistrictId (FK)\lAddressLine\lIsActive\l}"];
+  Intern    [label="{AppInternProfiles|Id (PK)\lUserId\lMentorUserId\lWorkplaceId (FK)\lStart/EndDate\lStatus\l}"];
+  Skill     [label="{AppSkills|Id (PK)\lName\lCategory\lIsActive\l}", fillcolor="#fdf3e6"];
+  Log       [label="{AppDailyLogs|Id (PK)\lInternProfileId (FK)\lLogDate\lTotalMinutes\lStatus\l}", fillcolor="#fde6ea"];
+  Item      [label="{AppDailyLogItems|Id (PK)\lDailyLogId (FK)\lTitle\lWorkType\lDurationMinutes\l}"];
+  LogSkill  [label="{AppDailyLogSkills|Id (PK)\lDailyLogId (FK)\lSkillId (FK)\lLearningLevel\l}"];
+  Problem   [label="{AppProblemSolvingEntries|Id (PK)\lDailyLogId (FK)\lProblemDescription\lUsedAI\l}"];
+  Review    [label="{AppMentorReviews|Id (PK)\lDailyLogId (FK)\lMentorUserId\lDecision\l}"];
+
+  Country  -> Province  [label="1..*"];
+  Province -> District  [label="1..*"];
+  District -> Workplace [label="1..*"];
+  Workplace-> Intern    [label="1..*"];
+  Intern   -> Log       [label="1..*"];
+  Log      -> Item      [label="1..* (cascade)"];
+  Log      -> LogSkill  [label="1..* (cascade)"];
+  Log      -> Problem   [label="1..* (cascade)"];
+  Log      -> Review    [label="1..* (restrict)"];
+  Skill    -> LogSkill  [label="1..*"];
+}
