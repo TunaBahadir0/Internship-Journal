@@ -1,6 +1,6 @@
 # Gün 7
 
-Tarih: 12 Ağustos 2026, Çarşamba
+Tarih: 11 Ağustos 2026, Salı
 
 ## Bugün tamamladığım işler
 
