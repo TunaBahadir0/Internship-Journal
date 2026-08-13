@@ -1,0 +1,84 @@
+erDiagram
+    AppCountries ||--o{ AppProvinces : "1..*"
+    AppProvinces ||--o{ AppDistricts : "1..*"
+    AppDistricts ||--o{ AppWorkplaces : "1..*"
+    AppWorkplaces ||--o{ AppInternProfiles : "1..*"
+    AppInternProfiles ||--o{ AppDailyLogs : "1..*"
+    AppDailyLogs ||--o{ AppDailyLogItems : "cascade"
+    AppDailyLogs ||--o{ AppDailyLogSkills : "cascade"
+    AppDailyLogs ||--o{ AppProblemSolvingEntries : "cascade"
+    AppDailyLogs ||--o{ AppMentorReviews : "restrict"
+    AppSkills ||--o{ AppDailyLogSkills : "1..*"
+
+    AppCountries {
+        uuid Id PK
+        string Code UK
+        string Name
+        bool IsActive
+    }
+    AppProvinces {
+        uuid Id PK
+        uuid CountryId FK
+        string Name
+        bool IsActive
+    }
+    AppDistricts {
+        uuid Id PK
+        uuid ProvinceId FK
+        string Name
+        bool IsActive
+    }
+    AppWorkplaces {
+        uuid Id PK
+        string Name
+        uuid DistrictId FK
+        string AddressLine
+        bool IsActive
+    }
+    AppInternProfiles {
+        uuid Id PK
+        uuid UserId
+        uuid MentorUserId
+        uuid WorkplaceId FK
+        date InternshipStartDate
+        date InternshipEndDate
+        int Status
+    }
+    AppSkills {
+        uuid Id PK
+        string Name
+        string Category
+        bool IsActive
+    }
+    AppDailyLogs {
+        uuid Id PK
+        uuid InternProfileId FK
+        date LogDate
+        int TotalMinutes
+        int Status
+    }
+    AppDailyLogItems {
+        uuid Id PK
+        uuid DailyLogId FK
+        string Title
+        int WorkType
+        int DurationMinutes
+    }
+    AppDailyLogSkills {
+        uuid Id PK
+        uuid DailyLogId FK
+        uuid SkillId FK
+        int LearningLevel
+    }
+    AppProblemSolvingEntries {
+        uuid Id PK
+        uuid DailyLogId FK
+        string ProblemDescription
+        bool UsedArtificialIntelligence
+    }
+    AppMentorReviews {
+        uuid Id PK
+        uuid DailyLogId FK
+        uuid MentorUserId
+        int Decision
+    }
