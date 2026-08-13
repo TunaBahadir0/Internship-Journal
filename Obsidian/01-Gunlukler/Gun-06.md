@@ -1,6 +1,6 @@
 # Gün 6
 
-Tarih: 11 Ağustos 2026, Salı
+Tarih: 10 Ağustos 2026, Pazartesi
 
 ## Bugün tamamladığım işler
 
