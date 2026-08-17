@@ -1,0 +1,35 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/InternshipJournal.Application.Contracts/InternshipJournal.Application.Contracts.csproj" />
+    <Project Path="src/InternshipJournal.Application/InternshipJournal.Application.csproj" />
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <Project Path="src/InternshipJournal.DbMigrator/InternshipJournal.DbMigrator.csproj" />
+    <Project Path="src/InternshipJournal.Domain.Shared/InternshipJournal.Domain.Shared.csproj" />
+    <Project Path="src/InternshipJournal.Domain/InternshipJournal.Domain.csproj" />
+    <Project Path="src/InternshipJournal.EntityFrameworkCore/InternshipJournal.EntityFrameworkCore.csproj" />
+    <Project Path="src/InternshipJournal.HttpApi.Client/InternshipJournal.HttpApi.Client.csproj" />
+    
+    
+    <Project Path="src/InternshipJournal.HttpApi/InternshipJournal.HttpApi.csproj" />
+    
+    
+    <Project Path="src/InternshipJournal.Web/InternshipJournal.Web.csproj" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test/InternshipJournal.Application.Tests/InternshipJournal.Application.Tests.csproj" />
+    <Project Path="test/InternshipJournal.Domain.Tests/InternshipJournal.Domain.Tests.csproj" />
+    <Project Path="test/InternshipJournal.EntityFrameworkCore.Tests/InternshipJournal.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="test/InternshipJournal.HttpApi.Client.ConsoleTestApp/InternshipJournal.HttpApi.Client.ConsoleTestApp.csproj" />
+    
+    <Project Path="test/InternshipJournal.TestBase/InternshipJournal.TestBase.csproj" />
+    <Project Path="test/InternshipJournal.Web.Tests/InternshipJournal.Web.Tests.csproj" />
+  </Folder>
+</Solution>
