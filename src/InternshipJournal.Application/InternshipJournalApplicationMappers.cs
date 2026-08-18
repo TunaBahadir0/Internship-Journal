@@ -1,3 +1,4 @@
+using InternshipJournal.InternProfiles;
 using InternshipJournal.Locations;
 using InternshipJournal.Workplaces;
 using Riok.Mapperly.Abstractions;
@@ -21,4 +22,8 @@ public partial class InternshipJournalApplicationMappers
     public partial WorkplaceDto MapToWorkplaceDto(WorkplaceWithLocation source);
 
     public partial WorkplaceDetailDto MapToWorkplaceDetailDto(WorkplaceWithLocation source);
+
+    public partial InternProfileDto MapToInternProfileDto(InternProfileWithDetails source);
+
+    public partial InternProfileDetailDto MapToInternProfileDetailDto(InternProfileWithDetails source);
 }

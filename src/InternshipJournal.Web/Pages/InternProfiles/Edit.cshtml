@@ -1,0 +1,64 @@
+@page "{id}"
+@model InternshipJournal.Web.Pages.InternProfiles.EditModel
+@{
+    ViewData["Title"] = "Staj Profili Düzenle";
+}
+
+<div class="card">
+    <div class="card-body">
+        <h3>Staj Profili Düzenle</h3>
+
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <label class="form-label">Mentor</label>
+                    <select asp-for="InternProfile.MentorUserId" asp-items="Model.Users" class="form-select">
+                        <option value="">Mentor seçiniz</option>
+                    </select>
+                    <span asp-validation-for="InternProfile.MentorUserId" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <label class="form-label">Çalışma Yeri</label>
+                    <select asp-for="InternProfile.WorkplaceId" asp-items="Model.Workplaces" class="form-select">
+                        <option value="">Çalışma yeri seçiniz</option>
+                    </select>
+                    <span asp-validation-for="InternProfile.WorkplaceId" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-4">
+                    <abp-input asp-for="InternProfile.University" />
+                </div>
+                <div class="col-md-4">
+                    <abp-input asp-for="InternProfile.SchoolDepartment" />
+                </div>
+                <div class="col-md-4">
+                    <abp-input asp-for="InternProfile.StudentNumber" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <abp-input asp-for="InternProfile.InternshipStartDate" />
+                </div>
+                <div class="col-md-4">
+                    <abp-input asp-for="InternProfile.InternshipEndDate" />
+                </div>
+                <div class="col-md-4">
+                    <abp-input asp-for="InternProfile.RequiredWorkDays" />
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <button type="submit" class="btn btn-primary">Kaydet</button>
+                <a asp-page="./Index" class="btn btn-secondary">Vazgeç</a>
+            </div>
+        </form>
+    </div>
+</div>

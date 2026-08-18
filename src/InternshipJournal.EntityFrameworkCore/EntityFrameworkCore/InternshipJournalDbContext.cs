@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using InternshipJournal.Consts;
+using InternshipJournal.InternProfiles;
 using InternshipJournal.Locations;
 using InternshipJournal.Skills;
 using InternshipJournal.Workplaces;
@@ -33,6 +34,7 @@ public class InternshipJournalDbContext :
     public DbSet<District> Districts { get; set; }
     public DbSet<Skill> Skills { get; set; }
     public DbSet<Workplace> Workplaces { get; set; }
+    public DbSet<InternProfile> InternProfiles { get; set; }
 
     #region Entities from the modules
 
@@ -199,6 +201,46 @@ public class InternshipJournalDbContext :
             b.HasOne<District>()
                 .WithMany()
                 .HasForeignKey(x => x.DistrictId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<InternProfile>(b =>
+        {
+            b.ToTable(InternshipJournalConsts.DbTablePrefix + "InternProfiles", InternshipJournalConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.Property(x => x.University)
+                .IsRequired()
+                .HasMaxLength(InternProfileConsts.MaxUniversityLength);
+
+            b.Property(x => x.SchoolDepartment)
+                .IsRequired()
+                .HasMaxLength(InternProfileConsts.MaxSchoolDepartmentLength);
+
+            b.Property(x => x.StudentNumber)
+                .IsRequired()
+                .HasMaxLength(InternProfileConsts.MaxStudentNumberLength);
+
+            b.OwnsOne(x => x.InternshipPeriod, o =>
+            {
+                o.Property(p => p.StartDate)
+                    .HasColumnName(nameof(InternProfile.InternshipPeriod) + "_" + nameof(DateRange.StartDate))
+                    .IsRequired();
+
+                o.Property(p => p.EndDate)
+                    .HasColumnName(nameof(InternProfile.InternshipPeriod) + "_" + nameof(DateRange.EndDate))
+                    .IsRequired();
+            });
+
+            b.Navigation(x => x.InternshipPeriod).IsRequired();
+
+            b.HasIndex(x => x.UserId)
+                .IsUnique()
+                .HasFilter("\"Status\" = 1");
+
+            b.HasOne<Workplace>()
+                .WithMany()
+                .HasForeignKey(x => x.WorkplaceId)
                 .OnDelete(DeleteBehavior.Restrict);
         });
     }
