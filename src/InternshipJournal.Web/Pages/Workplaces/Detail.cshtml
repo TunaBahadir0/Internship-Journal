@@ -1,7 +1,9 @@
 @page "{id}"
+@using InternshipJournal.Localization
 @model InternshipJournal.Web.Pages.Workplaces.DetailModel
+@inject Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizer<InternshipJournalResource> L
 @{
-    ViewData["Title"] = "Çalışma Yeri Detayı";
+    ViewData["Title"] = L["Workplaces:DetailTitle"].Value;
 }
 
 <div class="card">
@@ -9,43 +11,43 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h3 class="mb-0">@Model.Workplace.Name</h3>
             <span class="badge @(Model.Workplace.IsActive ? "bg-success" : "bg-secondary")">
-                @(Model.Workplace.IsActive ? "Aktif" : "Pasif")
+                @(Model.Workplace.IsActive ? L["Active"] : L["Inactive"])
             </span>
         </div>
 
         <dl class="row">
-            <dt class="col-sm-3">Vergi Numarası</dt>
+            <dt class="col-sm-3">@L["TaxNumber"]</dt>
             <dd class="col-sm-9">@(Model.Workplace.TaxNumber ?? "-")</dd>
 
-            <dt class="col-sm-3">Telefon</dt>
+            <dt class="col-sm-3">@L["Phone"]</dt>
             <dd class="col-sm-9">@(Model.Workplace.Phone ?? "-")</dd>
 
-            <dt class="col-sm-3">E-posta</dt>
+            <dt class="col-sm-3">@L["Email"]</dt>
             <dd class="col-sm-9">@(Model.Workplace.Email ?? "-")</dd>
 
-            <dt class="col-sm-3">Web Sitesi</dt>
+            <dt class="col-sm-3">@L["Website"]</dt>
             <dd class="col-sm-9">@(Model.Workplace.Website ?? "-")</dd>
 
-            <dt class="col-sm-3">Ülke</dt>
+            <dt class="col-sm-3">@L["Workplaces:Country"]</dt>
             <dd class="col-sm-9">@Model.Workplace.CountryName</dd>
 
-            <dt class="col-sm-3">İl</dt>
+            <dt class="col-sm-3">@L["Workplaces:Province"]</dt>
             <dd class="col-sm-9">@Model.Workplace.ProvinceName</dd>
 
-            <dt class="col-sm-3">İlçe</dt>
+            <dt class="col-sm-3">@L["Workplaces:District"]</dt>
             <dd class="col-sm-9">@Model.Workplace.DistrictName</dd>
 
-            <dt class="col-sm-3">Açık Adres</dt>
+            <dt class="col-sm-3">@L["AddressLine"]</dt>
             <dd class="col-sm-9">@Model.Workplace.AddressLine</dd>
 
-            <dt class="col-sm-3">Posta Kodu</dt>
+            <dt class="col-sm-3">@L["PostalCode"]</dt>
             <dd class="col-sm-9">@(Model.Workplace.PostalCode ?? "-")</dd>
 
-            <dt class="col-sm-3">Enlem / Boylam</dt>
+            <dt class="col-sm-3">@L["Workplaces:Coordinates"]</dt>
             <dd class="col-sm-9">@(Model.Workplace.Latitude?.ToString() ?? "-") / @(Model.Workplace.Longitude?.ToString() ?? "-")</dd>
         </dl>
 
-        <a asp-page="./Edit" asp-route-id="@Model.Workplace.Id" class="btn btn-primary">Düzenle</a>
-        <a asp-page="./Index" class="btn btn-secondary">Listeye Dön</a>
+        <a asp-page="./Edit" asp-route-id="@Model.Workplace.Id" class="btn btn-primary">@L["Edit"]</a>
+        <a asp-page="./Index" class="btn btn-secondary">@L["BackToList"]</a>
     </div>
 </div>

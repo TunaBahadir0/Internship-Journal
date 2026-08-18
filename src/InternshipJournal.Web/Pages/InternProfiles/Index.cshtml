@@ -1,39 +1,41 @@
 @page
 @using InternshipJournal.Enums
+@using InternshipJournal.Localization
 @model InternshipJournal.Web.Pages.InternProfiles.IndexModel
+@inject Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizer<InternshipJournalResource> L
 @{
-    ViewData["Title"] = "Staj Profilleri";
+    ViewData["Title"] = L["InternProfiles:Title"].Value;
 }
 
 <div class="card">
     <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <h3 class="mb-0">Staj Profilleri</h3>
-            <a asp-page="./Create" class="btn btn-primary">Yeni Staj Profili</a>
+            <h3 class="mb-0">@L["InternProfiles:Title"]</h3>
+            <a asp-page="./Create" class="btn btn-primary">@L["InternProfiles:New"]</a>
         </div>
 
         <form method="get" class="row mb-3">
             <div class="col-md-4">
-                <input type="text" name="Filter" value="@Model.Filter" class="form-control" placeholder="Kullanıcı adına göre ara..." />
+                <input type="text" name="Filter" value="@Model.Filter" class="form-control" placeholder="@L["InternProfiles:SearchPlaceholder"]" />
             </div>
             <div class="col-md-3">
-                <select name="Status" class="form-select" asp-items="Html.GetEnumSelectList<InternshipStatus>()" asp-for="Status">
-                    <option value="">Tüm durumlar</option>
+                <select name="Status" class="form-select" asp-items="Model.StatusOptions" asp-for="Status">
+                    <option value="">@L["InternProfiles:AllStatuses"]</option>
                 </select>
             </div>
             <div class="col-md-2">
-                <button type="submit" class="btn btn-secondary">Ara</button>
+                <button type="submit" class="btn btn-secondary">@L["Search"]</button>
             </div>
         </form>
 
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Kullanıcı</th>
-                    <th>Ad Soyad</th>
-                    <th>Çalışma Yeri</th>
-                    <th>Staj Dönemi</th>
-                    <th>Durum</th>
+                    <th>@L["InternProfiles:User"]</th>
+                    <th>@L["InternProfiles:FullName"]</th>
+                    <th>@L["InternProfiles:Workplace"]</th>
+                    <th>@L["InternProfiles:Period"]</th>
+                    <th>@L["Status"]</th>
                     <th></th>
                 </tr>
             </thead>
@@ -45,26 +47,26 @@
                         <td>@profile.FullName</td>
                         <td>@profile.WorkplaceName</td>
                         <td>@profile.InternshipStartDate.ToString("dd.MM.yyyy") - @profile.InternshipEndDate.ToString("dd.MM.yyyy")</td>
-                        <td>@profile.Status</td>
+                        <td>@L["Enum:InternshipStatus:" + profile.Status]</td>
                         <td class="text-end">
-                            <a asp-page="./Detail" asp-route-id="@profile.Id" class="btn btn-sm btn-outline-secondary">Detay</a>
-                            <a asp-page="./Edit" asp-route-id="@profile.Id" class="btn btn-sm btn-outline-primary">Düzenle</a>
+                            <a asp-page="./Detail" asp-route-id="@profile.Id" class="btn btn-sm btn-outline-secondary">@L["Detail"]</a>
+                            <a asp-page="./Edit" asp-route-id="@profile.Id" class="btn btn-sm btn-outline-primary">@L["Edit"]</a>
                             @if (profile.Status == InternshipStatus.Draft)
                             {
                                 <form method="post" asp-page-handler="Start" asp-route-id="@profile.Id" class="d-inline">
-                                    <button type="submit" class="btn btn-sm btn-outline-success">Başlat</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-success">@L["InternProfiles:Start"]</button>
                                 </form>
                             }
                             @if (profile.Status == InternshipStatus.Active)
                             {
                                 <form method="post" asp-page-handler="Complete" asp-route-id="@profile.Id" class="d-inline">
-                                    <button type="submit" class="btn btn-sm btn-outline-success">Tamamla</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-success">@L["InternProfiles:Complete"]</button>
                                 </form>
                             }
                             @if (profile.Status is InternshipStatus.Draft or InternshipStatus.Active)
                             {
                                 <form method="post" asp-page-handler="Cancel" asp-route-id="@profile.Id" class="d-inline">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger">İptal Et</button>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">@L["InternProfiles:CancelInternship"]</button>
                                 </form>
                             }
                         </td>

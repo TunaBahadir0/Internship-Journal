@@ -1,21 +1,23 @@
 @page "{id}"
+@using InternshipJournal.Localization
 @model InternshipJournal.Web.Pages.InternProfiles.EditModel
+@inject Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizer<InternshipJournalResource> L
 @{
-    ViewData["Title"] = "Staj Profili Düzenle";
+    ViewData["Title"] = L["InternProfiles:EditTitle"].Value;
 }
 
 <div class="card">
     <div class="card-body">
-        <h3>Staj Profili Düzenle</h3>
+        <h3>@L["InternProfiles:EditTitle"]</h3>
 
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <div class="row">
                 <div class="col-md-12">
-                    <label class="form-label">Mentor</label>
+                    <label class="form-label">@L["InternProfiles:Mentor"]</label>
                     <select asp-for="InternProfile.MentorUserId" asp-items="Model.Users" class="form-select">
-                        <option value="">Mentor seçiniz</option>
+                        <option value="">@L["InternProfiles:SelectMentor"]</option>
                     </select>
                     <span asp-validation-for="InternProfile.MentorUserId" class="text-danger"></span>
                 </div>
@@ -23,9 +25,9 @@
 
             <div class="row mt-3">
                 <div class="col-md-12">
-                    <label class="form-label">Çalışma Yeri</label>
+                    <label class="form-label">@L["InternProfiles:Workplace"]</label>
                     <select asp-for="InternProfile.WorkplaceId" asp-items="Model.Workplaces" class="form-select">
-                        <option value="">Çalışma yeri seçiniz</option>
+                        <option value="">@L["InternProfiles:SelectWorkplace"]</option>
                     </select>
                     <span asp-validation-for="InternProfile.WorkplaceId" class="text-danger"></span>
                 </div>
@@ -56,8 +58,8 @@
             </div>
 
             <div class="mt-3">
-                <button type="submit" class="btn btn-primary">Kaydet</button>
-                <a asp-page="./Index" class="btn btn-secondary">Vazgeç</a>
+                <button type="submit" class="btn btn-primary">@L["Save"]</button>
+                <a asp-page="./Index" class="btn btn-secondary">@L["Cancel"]</a>
             </div>
         </form>
     </div>
