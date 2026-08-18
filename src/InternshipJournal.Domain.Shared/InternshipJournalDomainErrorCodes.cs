@@ -53,4 +53,31 @@ public static class InternshipJournalDomainErrorCodes
 
     /// <summary>Boylam değeri -180 ile 180 arasında olmalıdır.</summary>
     public const string InvalidWorkplaceLongitude = "InternshipJournal:InvalidWorkplaceLongitude";
+
+    /// <summary>Belirtilen çalışma yeri bulunamadı.</summary>
+    public const string InternProfileWorkplaceNotFound = "InternshipJournal:InternProfileWorkplaceNotFound";
+
+    /// <summary>Pasif bir çalışma yeri staj profiline atanamaz.</summary>
+    public const string InternProfileWorkplaceInactive = "InternshipJournal:InternProfileWorkplaceInactive";
+
+    /// <summary>Belirtilen mentor kullanıcısı bulunamadı.</summary>
+    public const string InternProfileMentorNotFound = "InternshipJournal:InternProfileMentorNotFound";
+
+    /// <summary>Mentor, stajyerin kendisiyle aynı kullanıcı olamaz.</summary>
+    public const string MentorCannotBeSameAsIntern = "InternshipJournal:MentorCannotBeSameAsIntern";
+
+    /// <summary>Kullanıcının zaten aktif bir staj profili var.</summary>
+    public const string UserAlreadyHasActiveInternProfile = "InternshipJournal:UserAlreadyHasActiveInternProfile";
+
+    /// <summary>Yalnızca taslak durumundaki profil başlatılabilir.</summary>
+    public const string InternProfileCannotBeStarted = "InternshipJournal:InternProfileCannotBeStarted";
+
+    /// <summary>Yalnızca aktif durumdaki profil tamamlanabilir.</summary>
+    public const string InternProfileCannotBeCompleted = "InternshipJournal:InternProfileCannotBeCompleted";
+
+    /// <summary>Tamamlanmış bir profil iptal edilemez.</summary>
+    public const string InternProfileCannotBeCancelled = "InternshipJournal:InternProfileCannotBeCancelled";
+
+    /// <summary>Gerekli iş günü sayısı pozitif olmalıdır.</summary>
+    public const string RequiredWorkDaysMustBePositive = "InternshipJournal:RequiredWorkDaysMustBePositive";
 }

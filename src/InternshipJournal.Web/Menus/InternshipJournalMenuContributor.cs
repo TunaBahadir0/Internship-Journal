@@ -45,6 +45,28 @@ public class InternshipJournalMenuContributor : IMenuContributor
             )
         );
 
+        context.Menu.Items.Insert(
+            2,
+            new ApplicationMenuItem(
+                InternshipJournalMenus.InternProfiles,
+                l["Menu:InternProfiles"],
+                "~/InternProfiles",
+                icon: "fas fa-user-graduate",
+                order: 2
+            )
+        );
+
+        context.Menu.Items.Insert(
+            3,
+            new ApplicationMenuItem(
+                InternshipJournalMenus.MyProfile,
+                l["Menu:MyProfile"],
+                "~/Profile",
+                icon: "fas fa-id-card",
+                order: 3
+            )
+        );
+
         if (MultiTenancyConsts.IsEnabled)
         {
             administration.SetSubItemOrder(TenantManagementMenuNames.GroupName, 1);

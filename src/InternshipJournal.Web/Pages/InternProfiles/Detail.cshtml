@@ -1,0 +1,49 @@
+@page "{id}"
+@model InternshipJournal.Web.Pages.InternProfiles.DetailModel
+@{
+    ViewData["Title"] = "Staj Profili Detayı";
+}
+
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="mb-0">@Model.InternProfile.FullName</h3>
+            <span class="badge bg-info">@Model.InternProfile.Status</span>
+        </div>
+
+        <dl class="row">
+            <dt class="col-sm-3">Kullanıcı Adı</dt>
+            <dd class="col-sm-9">@Model.InternProfile.UserName</dd>
+
+            <dt class="col-sm-3">E-posta</dt>
+            <dd class="col-sm-9">@(Model.InternProfile.Email ?? "-")</dd>
+
+            <dt class="col-sm-3">Üniversite</dt>
+            <dd class="col-sm-9">@Model.InternProfile.University</dd>
+
+            <dt class="col-sm-3">Okul Bölümü</dt>
+            <dd class="col-sm-9">@Model.InternProfile.SchoolDepartment</dd>
+
+            <dt class="col-sm-3">Öğrenci Numarası</dt>
+            <dd class="col-sm-9">@Model.InternProfile.StudentNumber</dd>
+
+            <dt class="col-sm-3">Çalışma Yeri</dt>
+            <dd class="col-sm-9">@Model.InternProfile.WorkplaceName</dd>
+
+            <dt class="col-sm-3">Adres</dt>
+            <dd class="col-sm-9">@Model.InternProfile.AddressLine, @Model.InternProfile.DistrictName / @Model.InternProfile.ProvinceName / @Model.InternProfile.CountryName</dd>
+
+            <dt class="col-sm-3">Mentor</dt>
+            <dd class="col-sm-9">@Model.InternProfile.MentorFullName</dd>
+
+            <dt class="col-sm-3">Staj Dönemi</dt>
+            <dd class="col-sm-9">@Model.InternProfile.InternshipStartDate.ToString("dd.MM.yyyy") - @Model.InternProfile.InternshipEndDate.ToString("dd.MM.yyyy")</dd>
+
+            <dt class="col-sm-3">Gerekli İş Günü</dt>
+            <dd class="col-sm-9">@Model.InternProfile.RequiredWorkDays</dd>
+        </dl>
+
+        <a asp-page="./Edit" asp-route-id="@Model.InternProfile.Id" class="btn btn-primary">Düzenle</a>
+        <a asp-page="./Index" class="btn btn-secondary">Listeye Dön</a>
+    </div>
+</div>
