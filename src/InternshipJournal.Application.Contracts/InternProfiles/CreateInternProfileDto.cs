@@ -28,9 +28,11 @@ public class CreateInternProfileDto
     public string StudentNumber { get; set; } = null!;
 
     [Required]
+    [DataType(DataType.Date)]
     public DateTime InternshipStartDate { get; set; }
 
     [Required]
+    [DataType(DataType.Date)]
     public DateTime InternshipEndDate { get; set; }
 
     [Range(1, int.MaxValue)]
