@@ -46,3 +46,4 @@ Ana aggregate: **DailyLog** ve child'ları. Günlük durumları: Draft → Submi
 - **Gün 9:** Tasarım sunumu ve kontrol kapısı — `docs/decisions/`
 - **Gün 10:** ABP Framework temelleri — `docs/abp/`
 - **Gün 11:** Domain.Shared, konum referansları (Country/Province/District), Skill, seed, LocationAppService — `src/`
+- **Gün 12:** Workplace aggregate, WorkplaceManager, nested adres seçimi (ülke → il → ilçe), Razor Pages — `src/`

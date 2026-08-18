@@ -41,4 +41,16 @@ public static class InternshipJournalDomainErrorCodes
 
     /// <summary>Bu çalışma yeri adı zaten kullanılıyor.</summary>
     public const string WorkplaceNameAlreadyExists = "InternshipJournal:WorkplaceNameAlreadyExists";
+
+    /// <summary>Belirtilen ilçe bulunamadı.</summary>
+    public const string WorkplaceDistrictNotFound = "InternshipJournal:WorkplaceDistrictNotFound";
+
+    /// <summary>Girilen e-posta adresi geçerli bir formatta değil.</summary>
+    public const string InvalidWorkplaceEmailFormat = "InternshipJournal:InvalidWorkplaceEmailFormat";
+
+    /// <summary>Enlem değeri -90 ile 90 arasında olmalıdır.</summary>
+    public const string InvalidWorkplaceLatitude = "InternshipJournal:InvalidWorkplaceLatitude";
+
+    /// <summary>Boylam değeri -180 ile 180 arasında olmalıdır.</summary>
+    public const string InvalidWorkplaceLongitude = "InternshipJournal:InvalidWorkplaceLongitude";
 }
