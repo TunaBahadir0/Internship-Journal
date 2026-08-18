@@ -1,12 +1,14 @@
 @page
+@using InternshipJournal.Localization
 @model InternshipJournal.Web.Pages.Workplaces.CreateModel
+@inject Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizer<InternshipJournalResource> L
 @{
-    ViewData["Title"] = "Çalışma Yeri Oluştur";
+    ViewData["Title"] = L["Workplaces:CreateTitle"].Value;
 }
 
 <div class="card">
     <div class="card-body">
-        <h3>Çalışma Yeri Oluştur</h3>
+        <h3>@L["Workplaces:CreateTitle"]</h3>
 
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -34,25 +36,25 @@
             </div>
 
             <hr />
-            <h5>Adres</h5>
+            <h5>@L["Workplaces:AddressSection"]</h5>
 
             <div class="row">
                 <div class="col-md-4">
-                    <label class="form-label">Ülke</label>
+                    <label class="form-label">@L["Workplaces:Country"]</label>
                     <select id="CountrySelect" class="form-select">
-                        <option value="">Ülke seçiniz</option>
+                        <option value="">@L["Workplaces:SelectCountry"]</option>
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label">İl</label>
+                    <label class="form-label">@L["Workplaces:Province"]</label>
                     <select id="ProvinceSelect" class="form-select" disabled>
-                        <option value="">İl seçiniz</option>
+                        <option value="">@L["Workplaces:SelectProvince"]</option>
                     </select>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label">İlçe</label>
+                    <label class="form-label">@L["Workplaces:District"]</label>
                     <select asp-for="Workplace.DistrictId" id="DistrictSelect" class="form-select" disabled>
-                        <option value="">İlçe seçiniz</option>
+                        <option value="">@L["Workplaces:SelectDistrict"]</option>
                     </select>
                     <span asp-validation-for="Workplace.DistrictId" class="text-danger"></span>
                 </div>
@@ -77,8 +79,8 @@
             </div>
 
             <div class="mt-3">
-                <button type="submit" class="btn btn-primary">Kaydet</button>
-                <a asp-page="./Index" class="btn btn-secondary">Vazgeç</a>
+                <button type="submit" class="btn btn-primary">@L["Save"]</button>
+                <a asp-page="./Index" class="btn btn-secondary">@L["Cancel"]</a>
             </div>
         </form>
     </div>
@@ -92,10 +94,10 @@
                 countrySelect: '#CountrySelect',
                 provinceSelect: '#ProvinceSelect',
                 districtSelect: '#DistrictSelect',
-                countryPlaceholder: 'Ülke seçiniz',
-                provincePlaceholder: 'İl seçiniz',
-                districtPlaceholder: 'İlçe seçiniz',
-                errorMessage: 'Konum verileri yüklenirken bir hata oluştu.'
+                countryPlaceholder: '@L["Workplaces:SelectCountry"]',
+                provincePlaceholder: '@L["Workplaces:SelectProvince"]',
+                districtPlaceholder: '@L["Workplaces:SelectDistrict"]',
+                errorMessage: '@L["Workplaces:LocationLoadError"]'
             });
         });
     </script>

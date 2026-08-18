@@ -6,6 +6,7 @@ using InternshipJournal.Enums;
 using InternshipJournal.InternProfiles;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace InternshipJournal.Web.Pages.InternProfiles;
 
@@ -27,8 +28,14 @@ public class IndexModel : InternshipJournalPageModel
 
     public List<InternProfileDto> InternProfiles { get; set; } = new();
 
+    public List<SelectListItem> StatusOptions { get; set; } = new();
+
     public async Task OnGetAsync()
     {
+        StatusOptions = Enum.GetValues<InternshipStatus>()
+            .Select(x => new SelectListItem(L["Enum:InternshipStatus:" + x].ToString(), x.ToString()))
+            .ToList();
+
         var result = await _internProfileAppService.GetListAsync(new GetInternProfileListInput
         {
             Filter = Filter,
