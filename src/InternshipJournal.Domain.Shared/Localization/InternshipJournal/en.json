@@ -3,6 +3,7 @@
   "texts": {
     "AppName": "InternshipJournal",
     "Menu:Home": "Home",
+    "Menu:Workplaces": "Workplaces",
     "Welcome": "Welcome",
     "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP framework. For more information, visit abp.io."
   }

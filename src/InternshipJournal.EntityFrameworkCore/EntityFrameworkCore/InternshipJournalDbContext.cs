@@ -2,6 +2,7 @@
 using InternshipJournal.Consts;
 using InternshipJournal.Locations;
 using InternshipJournal.Skills;
+using InternshipJournal.Workplaces;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.Data;
@@ -31,6 +32,7 @@ public class InternshipJournalDbContext :
     public DbSet<Province> Provinces { get; set; }
     public DbSet<District> Districts { get; set; }
     public DbSet<Skill> Skills { get; set; }
+    public DbSet<Workplace> Workplaces { get; set; }
 
     #region Entities from the modules
 
@@ -155,6 +157,49 @@ public class InternshipJournalDbContext :
                 .HasMaxLength(SkillConsts.MaxDescriptionLength);
 
             b.HasIndex(x => x.Name).IsUnique();
+        });
+
+        builder.Entity<Workplace>(b =>
+        {
+            b.ToTable(InternshipJournalConsts.DbTablePrefix + "Workplaces", InternshipJournalConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.Property(x => x.Name)
+                .IsRequired()
+                .HasMaxLength(WorkplaceConsts.MaxNameLength);
+
+            b.Property(x => x.TaxNumber)
+                .HasMaxLength(WorkplaceConsts.MaxTaxNumberLength);
+
+            b.Property(x => x.Phone)
+                .HasMaxLength(WorkplaceConsts.MaxPhoneLength);
+
+            b.Property(x => x.Email)
+                .HasMaxLength(WorkplaceConsts.MaxEmailLength);
+
+            b.Property(x => x.Website)
+                .HasMaxLength(WorkplaceConsts.MaxWebsiteLength);
+
+            b.Property(x => x.AddressLine)
+                .IsRequired()
+                .HasMaxLength(WorkplaceConsts.MaxAddressLineLength);
+
+            b.Property(x => x.PostalCode)
+                .HasMaxLength(WorkplaceConsts.MaxPostalCodeLength);
+
+            b.Property(x => x.Latitude)
+                .HasColumnType("decimal(9,6)");
+
+            b.Property(x => x.Longitude)
+                .HasColumnType("decimal(9,6)");
+
+            b.HasIndex(x => x.Name).IsUnique();
+            b.HasIndex(x => x.DistrictId);
+
+            b.HasOne<District>()
+                .WithMany()
+                .HasForeignKey(x => x.DistrictId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

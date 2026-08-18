@@ -1,0 +1,51 @@
+@page "{id}"
+@model InternshipJournal.Web.Pages.Workplaces.DetailModel
+@{
+    ViewData["Title"] = "Çalışma Yeri Detayı";
+}
+
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="mb-0">@Model.Workplace.Name</h3>
+            <span class="badge @(Model.Workplace.IsActive ? "bg-success" : "bg-secondary")">
+                @(Model.Workplace.IsActive ? "Aktif" : "Pasif")
+            </span>
+        </div>
+
+        <dl class="row">
+            <dt class="col-sm-3">Vergi Numarası</dt>
+            <dd class="col-sm-9">@(Model.Workplace.TaxNumber ?? "-")</dd>
+
+            <dt class="col-sm-3">Telefon</dt>
+            <dd class="col-sm-9">@(Model.Workplace.Phone ?? "-")</dd>
+
+            <dt class="col-sm-3">E-posta</dt>
+            <dd class="col-sm-9">@(Model.Workplace.Email ?? "-")</dd>
+
+            <dt class="col-sm-3">Web Sitesi</dt>
+            <dd class="col-sm-9">@(Model.Workplace.Website ?? "-")</dd>
+
+            <dt class="col-sm-3">Ülke</dt>
+            <dd class="col-sm-9">@Model.Workplace.CountryName</dd>
+
+            <dt class="col-sm-3">İl</dt>
+            <dd class="col-sm-9">@Model.Workplace.ProvinceName</dd>
+
+            <dt class="col-sm-3">İlçe</dt>
+            <dd class="col-sm-9">@Model.Workplace.DistrictName</dd>
+
+            <dt class="col-sm-3">Açık Adres</dt>
+            <dd class="col-sm-9">@Model.Workplace.AddressLine</dd>
+
+            <dt class="col-sm-3">Posta Kodu</dt>
+            <dd class="col-sm-9">@(Model.Workplace.PostalCode ?? "-")</dd>
+
+            <dt class="col-sm-3">Enlem / Boylam</dt>
+            <dd class="col-sm-9">@(Model.Workplace.Latitude?.ToString() ?? "-") / @(Model.Workplace.Longitude?.ToString() ?? "-")</dd>
+        </dl>
+
+        <a asp-page="./Edit" asp-route-id="@Model.Workplace.Id" class="btn btn-primary">Düzenle</a>
+        <a asp-page="./Index" class="btn btn-secondary">Listeye Dön</a>
+    </div>
+</div>

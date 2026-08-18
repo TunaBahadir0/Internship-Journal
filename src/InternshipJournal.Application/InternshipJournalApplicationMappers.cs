@@ -1,4 +1,5 @@
 using InternshipJournal.Locations;
+using InternshipJournal.Workplaces;
 using Riok.Mapperly.Abstractions;
 using Volo.Abp.Mapperly;
 
@@ -16,4 +17,8 @@ public partial class InternshipJournalApplicationMappers
     public partial ProvinceLookupDto Map(Province source);
 
     public partial DistrictLookupDto Map(District source);
+
+    public partial WorkplaceDto MapToWorkplaceDto(WorkplaceWithLocation source);
+
+    public partial WorkplaceDetailDto MapToWorkplaceDetailDto(WorkplaceWithLocation source);
 }
