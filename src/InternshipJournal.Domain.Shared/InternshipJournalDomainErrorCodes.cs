@@ -80,4 +80,52 @@ public static class InternshipJournalDomainErrorCodes
 
     /// <summary>Gerekli iş günü sayısı pozitif olmalıdır.</summary>
     public const string RequiredWorkDaysMustBePositive = "InternshipJournal:RequiredWorkDaysMustBePositive";
+
+    /// <summary>Gelecek tarihli günlük oluşturulamaz.</summary>
+    public const string DailyLogDateCannotBeInFuture = "InternshipJournal:DailyLogDateCannotBeInFuture";
+
+    /// <summary>Günlük tarihi staj dönemi dışında.</summary>
+    public const string DailyLogDateOutsideInternshipPeriod = "InternshipJournal:DailyLogDateOutsideInternshipPeriod";
+
+    /// <summary>Belirtilen staj profili bulunamadı.</summary>
+    public const string DailyLogInternProfileNotFound = "InternshipJournal:DailyLogInternProfileNotFound";
+
+    /// <summary>Staj profili aktif durumda değil.</summary>
+    public const string DailyLogInternProfileNotActive = "InternshipJournal:DailyLogInternProfileNotActive";
+
+    /// <summary>Günlükte en az bir çalışma maddesi bulunmalıdır.</summary>
+    public const string DailyLogMustHaveAtLeastOneItem = "InternshipJournal:DailyLogMustHaveAtLeastOneItem";
+
+    /// <summary>Belirtilen çalışma maddesi bulunamadı.</summary>
+    public const string DailyLogItemNotFound = "InternshipJournal:DailyLogItemNotFound";
+
+    /// <summary>Çalışma maddesi süresi pozitif olmalıdır.</summary>
+    public const string DailyLogItemDurationMustBePositive = "InternshipJournal:DailyLogItemDurationMustBePositive";
+
+    /// <summary>Belirtilen yetkinlik kaydı günlükte bulunamadı.</summary>
+    public const string DailyLogSkillEntryNotFound = "InternshipJournal:DailyLogSkillEntryNotFound";
+
+    /// <summary>Belirtilen yetkinlik bulunamadı.</summary>
+    public const string DailyLogReferencedSkillNotFound = "InternshipJournal:DailyLogReferencedSkillNotFound";
+
+    /// <summary>Pasif bir yetkinlik günlüğe eklenemez.</summary>
+    public const string DailyLogReferencedSkillInactive = "InternshipJournal:DailyLogReferencedSkillInactive";
+
+    /// <summary>Belirtilen problem çözme kaydı bulunamadı.</summary>
+    public const string DailyLogProblemEntryNotFound = "InternshipJournal:DailyLogProblemEntryNotFound";
+
+    /// <summary>Yalnızca gönderilmiş günlük onaylanabilir.</summary>
+    public const string DailyLogCannotBeApproved = "InternshipJournal:DailyLogCannotBeApproved";
+
+    /// <summary>Yalnızca gönderilmiş günlük için düzeltme istenebilir.</summary>
+    public const string DailyLogCannotRequestRevision = "InternshipJournal:DailyLogCannotRequestRevision";
+
+    /// <summary>Yalnızca düzeltme istenen günlük taslağa döndürülebilir.</summary>
+    public const string DailyLogCannotReturnToDraft = "InternshipJournal:DailyLogCannotReturnToDraft";
+
+    /// <summary>AI kullanıldıysa araç adı ve kullanım özeti girilmelidir.</summary>
+    public const string ProblemSolvingAiToolAndSummaryRequired = "InternshipJournal:ProblemSolvingAiToolAndSummaryRequired";
+
+    /// <summary>AI önerisi reddedildiyse ret gerekçesi girilmelidir.</summary>
+    public const string ProblemSolvingAiRejectionReasonRequired = "InternshipJournal:ProblemSolvingAiRejectionReasonRequired";
 }
