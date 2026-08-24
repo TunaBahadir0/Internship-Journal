@@ -85,6 +85,17 @@ Her indeks için: desteklediği sorgu, kolon(lar) ve gerekçe.
 
 ---
 
+## Gün 15 doğrulaması
+
+Migration'da (`Added_DailyLog_Module`) yukarıdaki bileşik indeksler ve FK indeksleri (`IX_AppDailyLogItems_DailyLogId`, `IX_AppDailyLogSkills_SkillId`, `IX_AppProblemSolvingEntries_DailyLogId` dahil) birebir oluştu. İki kalem bilinçli olarak **eklenmedi**:
+
+- **DailyLogItem(WorkType):** 15. Gün müfredat metni bunu listeliyor, ama gerçek bir "WorkType'a göre filtrele" sorgusu henüz yok ve enum yalnızca 8 değer alıyor (düşük seçicilik) — yukarıdaki "gerçek sorgu ihtiyacına göre seç" ilkesiyle çelişirdi. İhtiyaç doğarsa (örn. haftalık "en çok zaman harcanan WorkType" raporu) eklenir.
+- **ProblemSolvingEntry(UsedArtificialIntelligence):** Bu dosyada zaten "(opsiyonel)" olarak işaretliydi; karar korundu.
+
+`AppMentorReviews` henüz oluşturulmadı (ayrı bir aggregate olarak ilerleyen bir günde planlanıyor); o tabloya ait indeksler kod yazıldığında eklenecek.
+
+---
+
 ## Çok fazla indeksin maliyeti
 
 Her indeks:

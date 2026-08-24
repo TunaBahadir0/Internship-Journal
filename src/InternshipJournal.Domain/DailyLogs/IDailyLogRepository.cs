@@ -17,6 +17,9 @@ public interface IDailyLogRepository : IRepository<DailyLog, Guid>
     Task<List<DailyLog>> GetListWithDetailsAsync(
         Guid? internProfileId = null,
         DailyLogStatus? status = null,
+        DateTime? startDate = null,
+        DateTime? endDate = null,
+        string? keyword = null,
         int skipCount = 0,
         int maxResultCount = int.MaxValue);
 }
