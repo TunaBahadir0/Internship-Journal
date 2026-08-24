@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using InternshipJournal.Consts;
+using InternshipJournal.DailyLogs;
 using InternshipJournal.InternProfiles;
 using InternshipJournal.Locations;
 using InternshipJournal.Skills;
@@ -35,6 +36,10 @@ public class InternshipJournalDbContext :
     public DbSet<Skill> Skills { get; set; }
     public DbSet<Workplace> Workplaces { get; set; }
     public DbSet<InternProfile> InternProfiles { get; set; }
+    public DbSet<DailyLog> DailyLogs { get; set; }
+    public DbSet<DailyLogItem> DailyLogItems { get; set; }
+    public DbSet<DailyLogSkill> DailyLogSkills { get; set; }
+    public DbSet<ProblemSolvingEntry> ProblemSolvingEntries { get; set; }
 
     #region Entities from the modules
 
@@ -242,6 +247,115 @@ public class InternshipJournalDbContext :
                 .WithMany()
                 .HasForeignKey(x => x.WorkplaceId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<DailyLog>(b =>
+        {
+            b.ToTable(InternshipJournalConsts.DbTablePrefix + "DailyLogs", InternshipJournalConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.Property(x => x.LogDate)
+                .IsRequired()
+                .HasColumnType("date");
+
+            b.Property(x => x.Summary)
+                .HasMaxLength(DailyLogConsts.MaxSummaryLength);
+
+            b.HasIndex(x => new { x.InternProfileId, x.LogDate }).IsUnique();
+            b.HasIndex(x => x.Status);
+
+            b.HasOne<InternProfile>()
+                .WithMany()
+                .HasForeignKey(x => x.InternProfileId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            b.HasMany(x => x.Items)
+                .WithOne()
+                .HasForeignKey("DailyLogId")
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+            b.Navigation(x => x.Items).UsePropertyAccessMode(PropertyAccessMode.Field);
+
+            b.HasMany(x => x.Skills)
+                .WithOne()
+                .HasForeignKey("DailyLogId")
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+            b.Navigation(x => x.Skills).UsePropertyAccessMode(PropertyAccessMode.Field);
+
+            b.HasMany(x => x.Problems)
+                .WithOne()
+                .HasForeignKey("DailyLogId")
+                .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+            b.Navigation(x => x.Problems).UsePropertyAccessMode(PropertyAccessMode.Field);
+        });
+
+        builder.Entity<DailyLogItem>(b =>
+        {
+            b.ToTable(InternshipJournalConsts.DbTablePrefix + "DailyLogItems", InternshipJournalConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.Property(x => x.Title)
+                .IsRequired()
+                .HasMaxLength(DailyLogItemConsts.MaxTitleLength);
+
+            b.Property(x => x.Description)
+                .HasMaxLength(DailyLogItemConsts.MaxDescriptionLength);
+        });
+
+        builder.Entity<DailyLogSkill>(b =>
+        {
+            b.ToTable(InternshipJournalConsts.DbTablePrefix + "DailyLogSkills", InternshipJournalConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.Property(x => x.Note)
+                .HasMaxLength(DailyLogSkillConsts.MaxNoteLength);
+
+            b.HasIndex("DailyLogId", nameof(DailyLogSkill.SkillId)).IsUnique();
+
+            b.HasOne<Skill>()
+                .WithMany()
+                .HasForeignKey(x => x.SkillId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        builder.Entity<ProblemSolvingEntry>(b =>
+        {
+            b.ToTable(InternshipJournalConsts.DbTablePrefix + "ProblemSolvingEntries", InternshipJournalConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.Property(x => x.Title)
+                .IsRequired()
+                .HasMaxLength(ProblemSolvingEntryConsts.MaxTitleLength);
+
+            b.Property(x => x.ProblemDescription)
+                .IsRequired()
+                .HasMaxLength(ProblemSolvingEntryConsts.MaxProblemDescriptionLength);
+
+            b.Property(x => x.ErrorMessage)
+                .HasMaxLength(ProblemSolvingEntryConsts.MaxErrorMessageLength);
+
+            b.Property(x => x.AttemptedSolutions)
+                .HasMaxLength(ProblemSolvingEntryConsts.MaxAttemptedSolutionsLength);
+
+            b.Property(x => x.RootCause)
+                .HasMaxLength(ProblemSolvingEntryConsts.MaxRootCauseLength);
+
+            b.Property(x => x.FinalSolution)
+                .HasMaxLength(ProblemSolvingEntryConsts.MaxFinalSolutionLength);
+
+            b.Property(x => x.AiToolName)
+                .HasMaxLength(ProblemSolvingEntryConsts.MaxAiToolNameLength);
+
+            b.Property(x => x.AiPromptSummary)
+                .HasMaxLength(ProblemSolvingEntryConsts.MaxAiPromptSummaryLength);
+
+            b.Property(x => x.AiSuggestion)
+                .HasMaxLength(ProblemSolvingEntryConsts.MaxAiSuggestionLength);
+
+            b.Property(x => x.AiRejectionReason)
+                .HasMaxLength(ProblemSolvingEntryConsts.MaxAiRejectionReasonLength);
         });
     }
 }

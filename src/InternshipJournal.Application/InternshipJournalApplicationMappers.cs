@@ -1,3 +1,4 @@
+using InternshipJournal.DailyLogs;
 using InternshipJournal.InternProfiles;
 using InternshipJournal.Locations;
 using InternshipJournal.Workplaces;
@@ -26,4 +27,14 @@ public partial class InternshipJournalApplicationMappers
     public partial InternProfileDto MapToInternProfileDto(InternProfileWithDetails source);
 
     public partial InternProfileDetailDto MapToInternProfileDetailDto(InternProfileWithDetails source);
+
+    public partial DailyLogDto MapToDailyLogDto(DailyLog source);
+
+    public partial DailyLogDetailDto MapToDailyLogDetailDto(DailyLog source);
+
+    public partial DailyLogItemDto Map(DailyLogItem source);
+
+    public partial DailyLogSkillDto Map(DailyLogSkill source);
+
+    public partial ProblemSolvingEntryDto Map(ProblemSolvingEntry source);
 }
