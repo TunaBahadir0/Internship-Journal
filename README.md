@@ -8,7 +8,7 @@ Depo: https://github.com/TunaBahadir0/Internship-Journal
 git clone https://github.com/TunaBahadir0/Internship-Journal.git
 ```
 
-> Depo herkese açıktır (public). Bu yüzden gerçek şifre, bağlantı anahtarı veya şirket sırrı kesinlikle repoya eklenmez; hassas ayarlar `.gitignore` ile dışlanır. `appsettings.json` içindeki bağlantı dizesi/şifreleme anahtarı ABP şablonunun varsayılan yerel geliştirme değerleridir, gerçek bir sır değildir.
+
 
 ## Proje yapısı
 
