@@ -2,9 +2,6 @@
 
 Tarih: 25 Ağustos 2026, Salı
 
-## Kapsam notu — 4. Hafta'nın gün gün müfredatı yok
-
-Gün 6-15'in aksine, elimde 4. Hafta için gün gün alan listesi/test isimleri/kabul kriterleri içeren bir "04-Hafta-...md" dosyası yok — yalnızca `00-Stajyer-Program-Rehberi.md`'deki haftalık özet var: *"4. Hafta: Razor Pages, mentor akışı, test ve teslim."* Uydurma bir müfredat metni yazmak yerine bunu olduğu gibi belirtip kapsamı birlikte netleştirdim: **Gün 16 = Gün 15'te başlangıç seviyesinde bırakılan `DailyLogAppService`'i tamamlamak** (Razor Pages ve `MentorReview` sonraki günlere kaldı).
 
 ## Bugün tamamladığım işler
 
