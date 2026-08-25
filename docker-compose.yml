@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: internshipjournal-postgres
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: myPassword
+      POSTGRES_DB: InternshipJournal
+    ports:
+      - "5432:5432"
+    volumes:
+      - internshipjournal-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d InternshipJournal"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  internshipjournal-postgres-data:
