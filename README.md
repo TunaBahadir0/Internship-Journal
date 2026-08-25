@@ -48,3 +48,6 @@ Ana aggregate: **DailyLog** ve child'ları. Günlük durumları: Draft → Submi
 - **Gün 11:** Domain.Shared, konum referansları (Country/Province/District), Skill, seed, LocationAppService — `src/`
 - **Gün 12:** Workplace aggregate, WorkplaceManager, nested adres seçimi (ülke → il → ilçe), Razor Pages — `src/`
 - **Gün 13:** InternProfile aggregate, DateRange Value Object, InternProfileManager, staj profili ekranları — `src/`
+- **Gün 14:** DailyLog aggregate, child entity'ler (DailyLogItem, DailyLogSkill, ProblemSolvingEntry), DailyLogManager, domain testleri — `src/`
+- **Gün 15:** DailyLog için EF Core mapping, migration (`Added_DailyLog_Module`), DailyLogRepository, Application Contracts ve başlangıç DailyLogAppService — `src/`
+- **Gün 16:** DailyLogAppService'in tamamlanması — madde/yetkinlik/problem yönetimi ve durum geçişi (Submit/RequestRevision/Approve/ReturnToDraft) uçtan uca — `src/`
