@@ -184,6 +184,9 @@
     "InternshipJournal:DailyLogCannotReturnToDraft": "Yalnızca düzeltme istenen günlük taslağa döndürülebilir.",
     "InternshipJournal:ProblemSolvingAiToolAndSummaryRequired": "Yapay zekâ kullanıldıysa araç adı ve kullanım özeti girilmelidir.",
     "InternshipJournal:ProblemSolvingAiRejectionReasonRequired": "Yapay zekâ önerisi reddedildiyse ret gerekçesi girilmelidir.",
+    "InternshipJournal:MentorReviewCommentRequiredForRevision": "Düzeltme talebinde yorum zorunludur.",
+    "InternshipJournal:MentorReviewNotAuthorized": "Yalnızca kendisine bağlı stajyerin günlüğünü inceleyebilirsiniz.",
+    "InternshipJournal:MentorReviewDailyLogNotFound": "İncelenmek istenen günlük bulunamadı.",
 
     "Home:GettingStarted": "Proje Hakkında",
     "Home:GettingStartedText": "Staj Günlüğü, staj çalışma yerlerini, stajyer profillerini ve günlük kayıtlarını takip eden bir ABP Framework uygulamasıdır.",

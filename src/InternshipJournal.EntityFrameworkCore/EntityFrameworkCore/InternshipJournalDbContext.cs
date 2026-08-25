@@ -3,6 +3,7 @@ using InternshipJournal.Consts;
 using InternshipJournal.DailyLogs;
 using InternshipJournal.InternProfiles;
 using InternshipJournal.Locations;
+using InternshipJournal.MentorReviews;
 using InternshipJournal.Skills;
 using InternshipJournal.Workplaces;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
@@ -40,6 +41,7 @@ public class InternshipJournalDbContext :
     public DbSet<DailyLogItem> DailyLogItems { get; set; }
     public DbSet<DailyLogSkill> DailyLogSkills { get; set; }
     public DbSet<ProblemSolvingEntry> ProblemSolvingEntries { get; set; }
+    public DbSet<MentorReview> MentorReviews { get; set; }
 
     #region Entities from the modules
 
@@ -356,6 +358,23 @@ public class InternshipJournalDbContext :
 
             b.Property(x => x.AiRejectionReason)
                 .HasMaxLength(ProblemSolvingEntryConsts.MaxAiRejectionReasonLength);
+        });
+
+        builder.Entity<MentorReview>(b =>
+        {
+            b.ToTable(InternshipJournalConsts.DbTablePrefix + "MentorReviews", InternshipJournalConsts.DbSchema);
+            b.ConfigureByConvention();
+
+            b.Property(x => x.Comment)
+                .HasMaxLength(MentorReviewConsts.MaxCommentLength);
+
+            b.HasIndex(x => x.DailyLogId);
+            b.HasIndex(x => x.MentorUserId);
+
+            b.HasOne<DailyLog>()
+                .WithMany()
+                .HasForeignKey(x => x.DailyLogId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

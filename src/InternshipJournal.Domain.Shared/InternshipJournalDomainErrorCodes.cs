@@ -128,4 +128,13 @@ public static class InternshipJournalDomainErrorCodes
 
     /// <summary>AI önerisi reddedildiyse ret gerekçesi girilmelidir.</summary>
     public const string ProblemSolvingAiRejectionReasonRequired = "InternshipJournal:ProblemSolvingAiRejectionReasonRequired";
+
+    /// <summary>Düzeltme talebinde yorum zorunludur.</summary>
+    public const string MentorReviewCommentRequiredForRevision = "InternshipJournal:MentorReviewCommentRequiredForRevision";
+
+    /// <summary>Mentor yalnızca kendisine bağlı stajyerin günlüğünü inceleyebilir.</summary>
+    public const string MentorReviewNotAuthorized = "InternshipJournal:MentorReviewNotAuthorized";
+
+    /// <summary>İncelenmek istenen günlük bulunamadı.</summary>
+    public const string MentorReviewDailyLogNotFound = "InternshipJournal:MentorReviewDailyLogNotFound";
 }
