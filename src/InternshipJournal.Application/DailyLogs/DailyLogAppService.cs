@@ -30,8 +30,7 @@ public class DailyLogAppService : InternshipJournalAppService, IDailyLogAppServi
 
     public async Task<DailyLogDetailDto> GetAsync(Guid id)
     {
-        var dailyLog = await _dailyLogRepository.GetWithDetailsAsync(id)
-            ?? throw new EntityNotFoundException(typeof(DailyLog), id);
+        var dailyLog = await GetWithDetailsOrThrowAsync(id);
 
         return _mapper.MapToDailyLogDetailDto(dailyLog);
     }
@@ -81,6 +80,180 @@ public class DailyLogAppService : InternshipJournalAppService, IDailyLogAppServi
         await _dailyLogRepository.UpdateAsync(dailyLog, autoSave: true);
 
         return await GetAsync(id);
+    }
+
+    public async Task<DailyLogDetailDto> AddItemAsync(Guid id, AddDailyLogItemInput input)
+    {
+        var dailyLog = await GetWithDetailsOrThrowAsync(id);
+
+        dailyLog.AddItem(input.Title, input.Description, input.WorkType, input.DurationMinutes, input.IsCompleted);
+
+        await _dailyLogRepository.UpdateAsync(dailyLog, autoSave: true);
+
+        return _mapper.MapToDailyLogDetailDto(dailyLog);
+    }
+
+    public async Task<DailyLogDetailDto> UpdateItemAsync(Guid id, Guid itemId, UpdateDailyLogItemInput input)
+    {
+        var dailyLog = await GetWithDetailsOrThrowAsync(id);
+
+        dailyLog.UpdateItem(itemId, input.Title, input.Description, input.WorkType, input.DurationMinutes, input.IsCompleted);
+
+        await _dailyLogRepository.UpdateAsync(dailyLog, autoSave: true);
+
+        return _mapper.MapToDailyLogDetailDto(dailyLog);
+    }
+
+    public async Task<DailyLogDetailDto> RemoveItemAsync(Guid id, Guid itemId)
+    {
+        var dailyLog = await GetWithDetailsOrThrowAsync(id);
+
+        dailyLog.RemoveItem(itemId);
+
+        await _dailyLogRepository.UpdateAsync(dailyLog, autoSave: true);
+
+        return _mapper.MapToDailyLogDetailDto(dailyLog);
+    }
+
+    public async Task<DailyLogDetailDto> AddSkillAsync(Guid id, AddDailyLogSkillInput input)
+    {
+        var dailyLog = await GetWithDetailsOrThrowAsync(id);
+
+        await _dailyLogManager.AddSkillAsync(dailyLog, input.SkillId, input.LearningLevel, input.Note);
+
+        await _dailyLogRepository.UpdateAsync(dailyLog, autoSave: true);
+
+        return _mapper.MapToDailyLogDetailDto(dailyLog);
+    }
+
+    public async Task<DailyLogDetailDto> UpdateSkillAsync(Guid id, Guid skillEntryId, UpdateDailyLogSkillInput input)
+    {
+        var dailyLog = await GetWithDetailsOrThrowAsync(id);
+
+        dailyLog.UpdateSkill(skillEntryId, input.LearningLevel, input.Note);
+
+        await _dailyLogRepository.UpdateAsync(dailyLog, autoSave: true);
+
+        return _mapper.MapToDailyLogDetailDto(dailyLog);
+    }
+
+    public async Task<DailyLogDetailDto> RemoveSkillAsync(Guid id, Guid skillEntryId)
+    {
+        var dailyLog = await GetWithDetailsOrThrowAsync(id);
+
+        dailyLog.RemoveSkill(skillEntryId);
+
+        await _dailyLogRepository.UpdateAsync(dailyLog, autoSave: true);
+
+        return _mapper.MapToDailyLogDetailDto(dailyLog);
+    }
+
+    public async Task<DailyLogDetailDto> AddProblemAsync(Guid id, AddProblemSolvingEntryInput input)
+    {
+        var dailyLog = await GetWithDetailsOrThrowAsync(id);
+
+        dailyLog.AddProblem(
+            input.Title,
+            input.ProblemDescription,
+            input.ErrorMessage,
+            input.AttemptedSolutions,
+            input.RootCause,
+            input.FinalSolution,
+            input.UsedArtificialIntelligence,
+            input.AiToolName,
+            input.AiPromptSummary,
+            input.AiSuggestion,
+            input.AiSuggestionAccepted,
+            input.AiRejectionReason);
+
+        await _dailyLogRepository.UpdateAsync(dailyLog, autoSave: true);
+
+        return _mapper.MapToDailyLogDetailDto(dailyLog);
+    }
+
+    public async Task<DailyLogDetailDto> UpdateProblemAsync(Guid id, Guid problemId, UpdateProblemSolvingEntryInput input)
+    {
+        var dailyLog = await GetWithDetailsOrThrowAsync(id);
+
+        dailyLog.UpdateProblem(
+            problemId,
+            input.Title,
+            input.ProblemDescription,
+            input.ErrorMessage,
+            input.AttemptedSolutions,
+            input.RootCause,
+            input.FinalSolution,
+            input.UsedArtificialIntelligence,
+            input.AiToolName,
+            input.AiPromptSummary,
+            input.AiSuggestion,
+            input.AiSuggestionAccepted,
+            input.AiRejectionReason);
+
+        await _dailyLogRepository.UpdateAsync(dailyLog, autoSave: true);
+
+        return _mapper.MapToDailyLogDetailDto(dailyLog);
+    }
+
+    public async Task<DailyLogDetailDto> RemoveProblemAsync(Guid id, Guid problemId)
+    {
+        var dailyLog = await GetWithDetailsOrThrowAsync(id);
+
+        dailyLog.RemoveProblem(problemId);
+
+        await _dailyLogRepository.UpdateAsync(dailyLog, autoSave: true);
+
+        return _mapper.MapToDailyLogDetailDto(dailyLog);
+    }
+
+    public async Task<DailyLogDetailDto> SubmitAsync(Guid id)
+    {
+        var dailyLog = await GetWithDetailsOrThrowAsync(id);
+
+        dailyLog.Submit();
+
+        await _dailyLogRepository.UpdateAsync(dailyLog, autoSave: true);
+
+        return _mapper.MapToDailyLogDetailDto(dailyLog);
+    }
+
+    public async Task<DailyLogDetailDto> RequestRevisionAsync(Guid id)
+    {
+        var dailyLog = await GetWithDetailsOrThrowAsync(id);
+
+        dailyLog.RequestRevision();
+
+        await _dailyLogRepository.UpdateAsync(dailyLog, autoSave: true);
+
+        return _mapper.MapToDailyLogDetailDto(dailyLog);
+    }
+
+    public async Task<DailyLogDetailDto> ApproveAsync(Guid id)
+    {
+        var dailyLog = await GetWithDetailsOrThrowAsync(id);
+
+        dailyLog.Approve();
+
+        await _dailyLogRepository.UpdateAsync(dailyLog, autoSave: true);
+
+        return _mapper.MapToDailyLogDetailDto(dailyLog);
+    }
+
+    public async Task<DailyLogDetailDto> ReturnToDraftAsync(Guid id)
+    {
+        var dailyLog = await GetWithDetailsOrThrowAsync(id);
+
+        dailyLog.ReturnToDraft();
+
+        await _dailyLogRepository.UpdateAsync(dailyLog, autoSave: true);
+
+        return _mapper.MapToDailyLogDetailDto(dailyLog);
+    }
+
+    private async Task<DailyLog> GetWithDetailsOrThrowAsync(Guid id)
+    {
+        return await _dailyLogRepository.GetWithDetailsAsync(id)
+            ?? throw new EntityNotFoundException(typeof(DailyLog), id);
     }
 
     private async Task<InternProfile> GetCurrentActiveInternProfileAsync()
