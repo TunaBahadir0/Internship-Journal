@@ -1,0 +1,76 @@
+@page
+@using System.Linq
+@using InternshipJournal.Localization
+@model InternshipJournal.Web.Pages.DailyLogs.IndexModel
+@inject Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizer<InternshipJournalResource> L
+@{
+    ViewData["Title"] = L["DailyLogs:Title"].Value;
+}
+
+<div class="card">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="mb-0">@L["DailyLogs:Title"]</h3>
+            <a asp-page="./Create" class="btn btn-primary">@L["DailyLogs:New"]</a>
+        </div>
+
+        @if (Model.ErrorMessage != null)
+        {
+            <div class="alert alert-warning">@Model.ErrorMessage</div>
+        }
+        else
+        {
+            <form method="get" class="row mb-3 g-2 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">@L["DailyLogs:StartDate"]</label>
+                    <input type="date" name="StartDate" value="@Model.StartDate?.ToString("yyyy-MM-dd")" class="form-control" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">@L["DailyLogs:EndDate"]</label>
+                    <input type="date" name="EndDate" value="@Model.EndDate?.ToString("yyyy-MM-dd")" class="form-control" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">@L["Status"]</label>
+                    <select name="Status" class="form-select" asp-items="Model.StatusOptions" asp-for="Status">
+                        <option value="">@L["InternProfiles:AllStatuses"]</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-secondary">@L["Search"]</button>
+                </div>
+            </form>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>@L["DailyLogs:LogDate"]</th>
+                        <th>@L["DailyLogs:Summary"]</th>
+                        <th>@L["DailyLogs:TotalMinutes"]</th>
+                        <th>@L["Status"]</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var log in Model.DailyLogs)
+                    {
+                        <tr>
+                            <td>@log.LogDate.ToString("dd.MM.yyyy")</td>
+                            <td>@(string.IsNullOrWhiteSpace(log.Summary) ? "-" : log.Summary)</td>
+                            <td>@log.TotalMinutes</td>
+                            <td>@L["Enum:DailyLogStatus:" + log.Status]</td>
+                            <td class="text-end">
+                                <a asp-page="./Detail" asp-route-id="@log.Id" class="btn btn-sm btn-outline-secondary">@L["Detail"]</a>
+                            </td>
+                        </tr>
+                    }
+                    @if (!Model.DailyLogs.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-muted">@L["DailyLogs:NoLogs"]</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>

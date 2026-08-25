@@ -67,6 +67,17 @@ public class InternshipJournalMenuContributor : IMenuContributor
             )
         );
 
+        context.Menu.Items.Insert(
+            4,
+            new ApplicationMenuItem(
+                InternshipJournalMenus.DailyLogs,
+                l["Menu:DailyLogs"],
+                "~/DailyLogs",
+                icon: "fas fa-book",
+                order: 4
+            )
+        );
+
         if (MultiTenancyConsts.IsEnabled)
         {
             administration.SetSubItemOrder(TenantManagementMenuNames.GroupName, 1);
