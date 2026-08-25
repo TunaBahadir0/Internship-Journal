@@ -184,6 +184,9 @@
     "InternshipJournal:DailyLogCannotReturnToDraft": "Only a log with a requested revision can be returned to draft.",
     "InternshipJournal:ProblemSolvingAiToolAndSummaryRequired": "If AI was used, the tool name and a usage summary must be provided.",
     "InternshipJournal:ProblemSolvingAiRejectionReasonRequired": "If the AI suggestion was rejected, a rejection reason must be provided.",
+    "InternshipJournal:MentorReviewCommentRequiredForRevision": "A comment is required when requesting a revision.",
+    "InternshipJournal:MentorReviewNotAuthorized": "You can only review logs of interns assigned to you.",
+    "InternshipJournal:MentorReviewDailyLogNotFound": "The daily log you are trying to review was not found.",
 
     "Home:GettingStarted": "About This Project",
     "Home:GettingStartedText": "Internship Journal is an ABP Framework application for tracking internship workplaces, intern profiles and daily logs.",
