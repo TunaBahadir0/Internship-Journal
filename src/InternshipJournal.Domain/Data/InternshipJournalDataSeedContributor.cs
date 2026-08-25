@@ -3,30 +3,42 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using InternshipJournal.Locations;
+using InternshipJournal.Permissions;
 using InternshipJournal.Skills;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.DependencyInjection;
+using Volo.Abp.Identity;
+using Volo.Abp.PermissionManagement;
 
 namespace InternshipJournal.Data;
 
 public class InternshipJournalDataSeedContributor : IDataSeedContributor, ITransientDependency
 {
+    public const string InternRoleName = "Stajyer";
+    public const string MentorRoleName = "Mentor";
+
     private readonly IRepository<Country, Guid> _countryRepository;
     private readonly IRepository<Province, Guid> _provinceRepository;
     private readonly IRepository<District, Guid> _districtRepository;
     private readonly IRepository<Skill, Guid> _skillRepository;
+    private readonly IdentityRoleManager _roleManager;
+    private readonly IPermissionManager _permissionManager;
 
     public InternshipJournalDataSeedContributor(
         IRepository<Country, Guid> countryRepository,
         IRepository<Province, Guid> provinceRepository,
         IRepository<District, Guid> districtRepository,
-        IRepository<Skill, Guid> skillRepository)
+        IRepository<Skill, Guid> skillRepository,
+        IdentityRoleManager roleManager,
+        IPermissionManager permissionManager)
     {
         _countryRepository = countryRepository;
         _provinceRepository = provinceRepository;
         _districtRepository = districtRepository;
         _skillRepository = skillRepository;
+        _roleManager = roleManager;
+        _permissionManager = permissionManager;
     }
 
     public async Task SeedAsync(DataSeedContext context)
@@ -35,6 +47,59 @@ public class InternshipJournalDataSeedContributor : IDataSeedContributor, ITrans
         await SeedProvincesAsync();
         await SeedDistrictsAsync();
         await SeedSkillsAsync();
+        await SeedRolesAsync();
+    }
+
+    private async Task SeedRolesAsync()
+    {
+        await GetOrCreateRoleAsync(InternRoleName);
+        await GrantPermissionsToRoleAsync(
+            InternRoleName,
+            InternshipJournalPermissions.DailyLogs.Default,
+            InternshipJournalPermissions.DailyLogs.Create,
+            InternshipJournalPermissions.DailyLogs.Edit,
+            InternshipJournalPermissions.DailyLogs.Submit);
+
+        await GetOrCreateRoleAsync(MentorRoleName);
+        await GrantPermissionsToRoleAsync(
+            MentorRoleName,
+            InternshipJournalPermissions.DailyLogs.Default,
+            InternshipJournalPermissions.Reviews.Default,
+            InternshipJournalPermissions.Reviews.Approve,
+            InternshipJournalPermissions.Reviews.RequestRevision);
+    }
+
+    private async Task<IdentityRole> GetOrCreateRoleAsync(string name)
+    {
+        var role = await _roleManager.FindByNameAsync(name);
+        if (role != null)
+        {
+            return role;
+        }
+
+        role = new IdentityRole(Guid.NewGuid(), name)
+        {
+            IsPublic = true
+        };
+
+        var result = await _roleManager.CreateAsync(role);
+        if (!result.Succeeded)
+        {
+            throw new InvalidOperationException(
+                $"'{name}' rolü oluşturulamadı: {string.Join(", ", result.Errors.Select(x => x.Description))}");
+        }
+
+        return role;
+    }
+
+    private const string RoleProviderName = "R";
+
+    private async Task GrantPermissionsToRoleAsync(string roleName, params string[] permissionNames)
+    {
+        foreach (var permissionName in permissionNames)
+        {
+            await _permissionManager.SetAsync(permissionName, RoleProviderName, roleName, true);
+        }
     }
 
     private async Task SeedCountriesAsync()

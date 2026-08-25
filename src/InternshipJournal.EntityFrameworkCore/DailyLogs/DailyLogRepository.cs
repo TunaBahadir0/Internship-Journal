@@ -4,9 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using InternshipJournal.EntityFrameworkCore;
 using InternshipJournal.Enums;
+using InternshipJournal.InternProfiles;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
+using Volo.Abp.Identity;
 
 namespace InternshipJournal.DailyLogs;
 
@@ -89,6 +91,38 @@ public class DailyLogRepository : EfCoreRepository<InternshipJournalDbContext, D
             .OrderByDescending(x => x.LogDate)
             .Skip(skipCount)
             .Take(maxResultCount)
+            .ToListAsync();
+    }
+
+    public async Task<List<DailyLogForReview>> GetListForMentorAsync(Guid mentorUserId, DailyLogStatus? status = null)
+    {
+        var dbContext = await GetDbContextAsync();
+
+        var query =
+            from log in dbContext.Set<DailyLog>()
+            join profile in dbContext.Set<InternProfile>() on log.InternProfileId equals profile.Id
+            join intern in dbContext.Set<IdentityUser>() on profile.UserId equals intern.Id
+            where profile.MentorUserId == mentorUserId
+            select new { log, profile, intern };
+
+        if (status.HasValue)
+        {
+            query = query.Where(x => x.log.Status == status.Value);
+        }
+
+        return await query
+            .OrderByDescending(x => x.log.SubmittedAt)
+            .Select(x => new DailyLogForReview
+            {
+                Id = x.log.Id,
+                InternProfileId = x.profile.Id,
+                InternUserName = x.intern.UserName,
+                InternFullName = (x.intern.Name + " " + x.intern.Surname).Trim(),
+                LogDate = x.log.LogDate,
+                TotalMinutes = x.log.TotalMinutes,
+                Status = x.log.Status,
+                SubmittedAt = x.log.SubmittedAt
+            })
             .ToListAsync();
     }
 }

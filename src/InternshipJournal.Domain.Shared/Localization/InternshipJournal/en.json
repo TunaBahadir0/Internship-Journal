@@ -123,6 +123,14 @@
     "DailyLogs:UsedArtificialIntelligence": "Used Artificial Intelligence",
     "DailyLogs:AiToolName": "AI Tool Used",
     "DailyLogs:AiPromptSummary": "Prompt Summary",
+    "DailyLogs:MentorReviewNote": "This log is waiting for your review.",
+    "DailyLogs:ApproveComment": "Approval Comment (optional)",
+    "DailyLogs:RevisionComment": "Revision Reason",
+
+    "Menu:MentorReviews": "My Reviews",
+    "MentorReviews:Title": "Pending Reviews",
+    "MentorReviews:NoLogs": "No pending reviews.",
+    "MentorReviews:Intern": "Intern",
 
     "Enum:DailyLogStatus:Draft": "Draft",
     "Enum:DailyLogStatus:Submitted": "Submitted",
@@ -142,6 +150,9 @@
     "Enum:LearningLevel:Practiced": "Practiced",
     "Enum:LearningLevel:Applied": "Applied",
     "Enum:LearningLevel:Improved": "Improved",
+
+    "Enum:MentorReviewDecision:Approved": "Approved",
+    "Enum:MentorReviewDecision:RevisionRequested": "Revision Requested",
 
     "InternshipJournal:CountryCodeAlreadyExists": "This country code is already in use.",
     "InternshipJournal:ProvinceAlreadyExists": "This province already exists in the selected country.",
@@ -187,6 +198,21 @@
     "InternshipJournal:MentorReviewCommentRequiredForRevision": "A comment is required when requesting a revision.",
     "InternshipJournal:MentorReviewNotAuthorized": "You can only review logs of interns assigned to you.",
     "InternshipJournal:MentorReviewDailyLogNotFound": "The daily log you are trying to review was not found.",
+    "InternshipJournal:DailyLogNotOwnedByCurrentUser": "You do not have permission to act on this daily log.",
+
+    "Permission:InternshipJournal": "Internship Journal",
+    "Permission:Workplaces": "Workplaces",
+    "Permission:Workplaces.Create": "Creating",
+    "Permission:Workplaces.Edit": "Editing",
+    "Permission:DailyLogs": "Daily Logs",
+    "Permission:DailyLogs.Create": "Creating",
+    "Permission:DailyLogs.Edit": "Editing",
+    "Permission:DailyLogs.Submit": "Submitting",
+    "Permission:Reviews": "Mentor Reviews",
+    "Permission:Reviews.Approve": "Approving",
+    "Permission:Reviews.RequestRevision": "Requesting Revision",
+    "Permission:Reports": "Reports",
+    "Permission:Administration": "Administration",
 
     "Home:GettingStarted": "About This Project",
     "Home:GettingStartedText": "Internship Journal is an ABP Framework application for tracking internship workplaces, intern profiles and daily logs.",

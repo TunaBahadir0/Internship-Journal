@@ -53,7 +53,12 @@ public abstract class MentorReviewAppServiceTests<TStartupModule> : InternshipJo
 
         review.Decision.ShouldBe(MentorReviewDecision.Approved);
 
-        var dailyLog = await _dailyLogAppService.GetAsync(dailyLogId);
+        DailyLogDetailDto dailyLog;
+        using (LoginAs(mentorId))
+        {
+            dailyLog = await _dailyLogAppService.GetAsync(dailyLogId);
+        }
+
         dailyLog.Status.ShouldBe(DailyLogStatus.Approved);
     }
 
@@ -86,7 +91,12 @@ public abstract class MentorReviewAppServiceTests<TStartupModule> : InternshipJo
 
         review.Decision.ShouldBe(MentorReviewDecision.RevisionRequested);
 
-        var dailyLog = await _dailyLogAppService.GetAsync(dailyLogId);
+        DailyLogDetailDto dailyLog;
+        using (LoginAs(mentorId))
+        {
+            dailyLog = await _dailyLogAppService.GetAsync(dailyLogId);
+        }
+
         dailyLog.Status.ShouldBe(DailyLogStatus.RevisionRequested);
     }
 

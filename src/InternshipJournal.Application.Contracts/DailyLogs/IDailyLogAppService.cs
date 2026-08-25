@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using InternshipJournal.Enums;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 
@@ -10,6 +12,12 @@ public interface IDailyLogAppService : IApplicationService
     Task<DailyLogDetailDto> GetAsync(Guid id);
 
     Task<PagedResultDto<DailyLogDto>> GetListAsync(GetDailyLogListInput input);
+
+    /// <summary>
+    /// Giriş yapan mentora bağlı stajyerlerin günlüklerini döndürür (varsayılan: yalnızca
+    /// Submitted durumundakiler — "bekleyen incelemeler" listesi).
+    /// </summary>
+    Task<List<DailyLogForReviewDto>> GetListForReviewAsync(DailyLogStatus? status = null);
 
     Task<DailyLogDetailDto> CreateAsync(CreateDailyLogDto input);
 
@@ -35,9 +43,9 @@ public interface IDailyLogAppService : IApplicationService
 
     Task<DailyLogDetailDto> SubmitAsync(Guid id);
 
-    Task<DailyLogDetailDto> RequestRevisionAsync(Guid id);
-
-    Task<DailyLogDetailDto> ApproveAsync(Guid id);
+    // Approve/RequestRevision buradan kaldırıldı — bunlar artık yalnızca
+    // IMentorReviewAppService üzerinden (mentor yetki kontrolüyle ve MentorReview
+    // kaydı oluşturularak) yapılabiliyor. Bkz. Gün 19 günlüğü.
 
     Task<DailyLogDetailDto> ReturnToDraftAsync(Guid id);
 }

@@ -22,4 +22,6 @@ public interface IDailyLogRepository : IRepository<DailyLog, Guid>
         string? keyword = null,
         int skipCount = 0,
         int maxResultCount = int.MaxValue);
+
+    Task<List<DailyLogForReview>> GetListForMentorAsync(Guid mentorUserId, DailyLogStatus? status = null);
 }
