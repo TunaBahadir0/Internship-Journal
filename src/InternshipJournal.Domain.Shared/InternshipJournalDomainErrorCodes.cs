@@ -137,4 +137,7 @@ public static class InternshipJournalDomainErrorCodes
 
     /// <summary>İncelenmek istenen günlük bulunamadı.</summary>
     public const string MentorReviewDailyLogNotFound = "InternshipJournal:MentorReviewDailyLogNotFound";
+
+    /// <summary>Bu günlük üzerinde işlem yapma yetkiniz yok.</summary>
+    public const string DailyLogNotOwnedByCurrentUser = "InternshipJournal:DailyLogNotOwnedByCurrentUser";
 }

@@ -78,6 +78,17 @@ public class InternshipJournalMenuContributor : IMenuContributor
             )
         );
 
+        context.Menu.Items.Insert(
+            5,
+            new ApplicationMenuItem(
+                InternshipJournalMenus.MentorReviews,
+                l["Menu:MentorReviews"],
+                "~/MentorReviews",
+                icon: "fas fa-clipboard-check",
+                order: 5
+            )
+        );
+
         if (MultiTenancyConsts.IsEnabled)
         {
             administration.SetSubItemOrder(TenantManagementMenuNames.GroupName, 1);

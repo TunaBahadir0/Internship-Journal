@@ -34,6 +34,8 @@ public partial class InternshipJournalApplicationMappers
 
     public partial DailyLogDetailDto MapToDailyLogDetailDto(DailyLog source);
 
+    public partial DailyLogForReviewDto MapToDailyLogForReviewDto(DailyLogForReview source);
+
     public partial DailyLogItemDto Map(DailyLogItem source);
 
     public partial DailyLogSkillDto Map(DailyLogSkill source);

@@ -70,12 +70,17 @@
             }
             @if (Model.DailyLog.Status == DailyLogStatus.Submitted)
             {
-                <form method="post" asp-page-handler="Approve" class="d-inline">
-                    <button type="submit" class="btn btn-success">@L["DailyLogs:Approve"]</button>
-                </form>
-                <form method="post" asp-page-handler="RequestRevision" class="d-inline">
-                    <button type="submit" class="btn btn-outline-warning">@L["DailyLogs:RequestRevision"]</button>
-                </form>
+                <div class="border rounded p-3 mt-2">
+                    <p class="text-muted mb-2">@L["DailyLogs:MentorReviewNote"]</p>
+                    <form method="post" asp-page-handler="Approve" class="mb-3">
+                        <abp-input asp-for="ApproveInput.Comment" label="@L["DailyLogs:ApproveComment"].Value" />
+                        <button type="submit" class="btn btn-success mt-2">@L["DailyLogs:Approve"]</button>
+                    </form>
+                    <form method="post" asp-page-handler="RequestRevision">
+                        <abp-input asp-for="RevisionInput.Comment" label="@L["DailyLogs:RevisionComment"].Value" />
+                        <button type="submit" class="btn btn-outline-warning mt-2">@L["DailyLogs:RequestRevision"]</button>
+                    </form>
+                </div>
             }
             @if (Model.DailyLog.Status == DailyLogStatus.RevisionRequested)
             {
@@ -88,6 +93,30 @@
         <a asp-page="./Index" class="btn btn-link mt-2">@L["BackToList"]</a>
     </div>
 </div>
+
+@if (Model.Reviews.Any())
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <h4>@L["MentorReviews:Title"]</h4>
+            <ul class="list-group">
+                @foreach (var review in Model.Reviews)
+                {
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between">
+                            <span class="fw-bold">@L["Enum:MentorReviewDecision:" + review.Decision]</span>
+                            <span class="text-muted">@review.ReviewedAt.ToString("dd.MM.yyyy HH:mm")</span>
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(review.Comment))
+                        {
+                            <p class="mb-0 mt-1">@review.Comment</p>
+                        }
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+}
 
 <div class="card mb-3">
     <div class="card-body">

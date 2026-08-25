@@ -1,0 +1,46 @@
+@page
+@using System.Linq
+@using InternshipJournal.Localization
+@model InternshipJournal.Web.Pages.MentorReviews.IndexModel
+@inject Microsoft.AspNetCore.Mvc.Localization.IHtmlLocalizer<InternshipJournalResource> L
+@{
+    ViewData["Title"] = L["MentorReviews:Title"].Value;
+}
+
+<div class="card">
+    <div class="card-body">
+        <h3>@L["MentorReviews:Title"]</h3>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>@L["MentorReviews:Intern"]</th>
+                    <th>@L["DailyLogs:LogDate"]</th>
+                    <th>@L["DailyLogs:TotalMinutes"]</th>
+                    <th>@L["DailyLogs:SubmittedAt"]</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var log in Model.PendingLogs)
+                {
+                    <tr>
+                        <td>@log.InternFullName (@log.InternUserName)</td>
+                        <td>@log.LogDate.ToString("dd.MM.yyyy")</td>
+                        <td>@log.TotalMinutes</td>
+                        <td>@(log.SubmittedAt?.ToString("dd.MM.yyyy HH:mm") ?? "-")</td>
+                        <td class="text-end">
+                            <a asp-page="/DailyLogs/Detail" asp-route-id="@log.Id" class="btn btn-sm btn-outline-secondary">@L["Detail"]</a>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.PendingLogs.Any())
+                {
+                    <tr>
+                        <td colspan="5" class="text-muted">@L["MentorReviews:NoLogs"]</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

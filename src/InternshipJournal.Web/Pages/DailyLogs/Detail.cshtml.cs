@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using InternshipJournal.DailyLogs;
 using InternshipJournal.Enums;
+using InternshipJournal.MentorReviews;
 using InternshipJournal.Skills;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,11 +17,16 @@ namespace InternshipJournal.Web.Pages.DailyLogs;
 public class DetailModel : InternshipJournalPageModel
 {
     private readonly IDailyLogAppService _dailyLogAppService;
+    private readonly IMentorReviewAppService _mentorReviewAppService;
     private readonly ISkillAppService _skillAppService;
 
-    public DetailModel(IDailyLogAppService dailyLogAppService, ISkillAppService skillAppService)
+    public DetailModel(
+        IDailyLogAppService dailyLogAppService,
+        IMentorReviewAppService mentorReviewAppService,
+        ISkillAppService skillAppService)
     {
         _dailyLogAppService = dailyLogAppService;
+        _mentorReviewAppService = mentorReviewAppService;
         _skillAppService = skillAppService;
     }
 
@@ -41,11 +47,19 @@ public class DetailModel : InternshipJournalPageModel
     [BindProperty]
     public AddProblemSolvingEntryInput NewProblem { get; set; } = new();
 
+    [BindProperty]
+    public ApproveDailyLogReviewInput ApproveInput { get; set; } = new();
+
+    [BindProperty]
+    public RequestDailyLogRevisionInput RevisionInput { get; set; } = new();
+
     public List<SelectListItem> WorkTypeOptions { get; set; } = new();
 
     public List<SelectListItem> LearningLevelOptions { get; set; } = new();
 
     public List<SelectListItem> SkillOptions { get; set; } = new();
+
+    public List<MentorReviewDto> Reviews { get; set; } = new();
 
     public string? ErrorMessage { get; set; }
 
@@ -137,12 +151,19 @@ public class DetailModel : InternshipJournalPageModel
 
     public async Task<IActionResult> OnPostRequestRevisionAsync()
     {
-        return await ExecuteAsync(() => _dailyLogAppService.RequestRevisionAsync(Id));
+        ModelState.Clear();
+        if (!TryValidateModel(RevisionInput, nameof(RevisionInput)))
+        {
+            await LoadAsync();
+            return Page();
+        }
+
+        return await ExecuteReviewAsync(() => _mentorReviewAppService.RequestRevisionAsync(Id, RevisionInput));
     }
 
     public async Task<IActionResult> OnPostApproveAsync()
     {
-        return await ExecuteAsync(() => _dailyLogAppService.ApproveAsync(Id));
+        return await ExecuteReviewAsync(() => _mentorReviewAppService.ApproveAsync(Id, ApproveInput));
     }
 
     public async Task<IActionResult> OnPostReturnToDraftAsync()
@@ -151,6 +172,20 @@ public class DetailModel : InternshipJournalPageModel
     }
 
     private async Task<IActionResult> ExecuteAsync(Func<Task<DailyLogDetailDto>> action)
+    {
+        try
+        {
+            await action();
+        }
+        catch (BusinessException ex)
+        {
+            TempData["DailyLogError"] = GetErrorMessage(ex);
+        }
+
+        return RedirectToPage(new { id = Id });
+    }
+
+    private async Task<IActionResult> ExecuteReviewAsync(Func<Task<MentorReviewDto>> action)
     {
         try
         {
@@ -178,5 +213,7 @@ public class DetailModel : InternshipJournalPageModel
 
         var skills = await _skillAppService.GetListAsync();
         SkillOptions = skills.Select(x => new SelectListItem(x.Name, x.Id.ToString())).ToList();
+
+        Reviews = await _mentorReviewAppService.GetListByDailyLogAsync(Id);
     }
 }

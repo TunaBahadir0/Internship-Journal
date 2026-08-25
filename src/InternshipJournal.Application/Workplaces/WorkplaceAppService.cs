@@ -1,11 +1,14 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using InternshipJournal.Permissions;
+using Microsoft.AspNetCore.Authorization;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Entities;
 
 namespace InternshipJournal.Workplaces;
 
+[Authorize(InternshipJournalPermissions.Workplaces.Default)]
 public class WorkplaceAppService : InternshipJournalAppService, IWorkplaceAppService
 {
     private readonly IWorkplaceRepository _workplaceRepository;
@@ -57,6 +60,7 @@ public class WorkplaceAppService : InternshipJournalAppService, IWorkplaceAppSer
             items.Select(_mapper.MapToWorkplaceDto).ToList());
     }
 
+    [Authorize(InternshipJournalPermissions.Workplaces.Create)]
     public async Task<WorkplaceDetailDto> CreateAsync(CreateWorkplaceDto input)
     {
         var workplace = await _workplaceManager.CreateAsync(
@@ -76,6 +80,7 @@ public class WorkplaceAppService : InternshipJournalAppService, IWorkplaceAppSer
         return await GetAsync(workplace.Id);
     }
 
+    [Authorize(InternshipJournalPermissions.Workplaces.Edit)]
     public async Task<WorkplaceDetailDto> UpdateAsync(Guid id, UpdateWorkplaceDto input)
     {
         var workplace = await _workplaceRepository.GetAsync(id);
@@ -91,6 +96,7 @@ public class WorkplaceAppService : InternshipJournalAppService, IWorkplaceAppSer
         return await GetAsync(id);
     }
 
+    [Authorize(InternshipJournalPermissions.Workplaces.Edit)]
     public async Task ActivateAsync(Guid id)
     {
         var workplace = await _workplaceRepository.GetAsync(id);
@@ -98,6 +104,7 @@ public class WorkplaceAppService : InternshipJournalAppService, IWorkplaceAppSer
         await _workplaceRepository.UpdateAsync(workplace);
     }
 
+    [Authorize(InternshipJournalPermissions.Workplaces.Edit)]
     public async Task DeactivateAsync(Guid id)
     {
         var workplace = await _workplaceRepository.GetAsync(id);

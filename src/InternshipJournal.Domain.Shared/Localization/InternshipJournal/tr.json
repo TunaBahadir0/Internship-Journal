@@ -123,6 +123,14 @@
     "DailyLogs:UsedArtificialIntelligence": "Yapay Zekâ Kullanıldı mı",
     "DailyLogs:AiToolName": "Kullanılan AI Aracı",
     "DailyLogs:AiPromptSummary": "İstem Özeti",
+    "DailyLogs:MentorReviewNote": "Bu günlük incelemenizi bekliyor.",
+    "DailyLogs:ApproveComment": "Onay Yorumu (opsiyonel)",
+    "DailyLogs:RevisionComment": "Düzeltme Gerekçesi",
+
+    "Menu:MentorReviews": "İncelemelerim",
+    "MentorReviews:Title": "Bekleyen İncelemeler",
+    "MentorReviews:NoLogs": "Bekleyen inceleme yok.",
+    "MentorReviews:Intern": "Stajyer",
 
     "Enum:DailyLogStatus:Draft": "Taslak",
     "Enum:DailyLogStatus:Submitted": "Gönderildi",
@@ -142,6 +150,9 @@
     "Enum:LearningLevel:Practiced": "Uyguladı",
     "Enum:LearningLevel:Applied": "Kullandı",
     "Enum:LearningLevel:Improved": "Geliştirdi",
+
+    "Enum:MentorReviewDecision:Approved": "Onaylandı",
+    "Enum:MentorReviewDecision:RevisionRequested": "Düzeltme İstendi",
 
     "InternshipJournal:CountryCodeAlreadyExists": "Bu ülke kodu zaten kullanılıyor.",
     "InternshipJournal:ProvinceAlreadyExists": "Bu il, seçilen ülkede zaten var.",
@@ -187,6 +198,21 @@
     "InternshipJournal:MentorReviewCommentRequiredForRevision": "Düzeltme talebinde yorum zorunludur.",
     "InternshipJournal:MentorReviewNotAuthorized": "Yalnızca kendisine bağlı stajyerin günlüğünü inceleyebilirsiniz.",
     "InternshipJournal:MentorReviewDailyLogNotFound": "İncelenmek istenen günlük bulunamadı.",
+    "InternshipJournal:DailyLogNotOwnedByCurrentUser": "Bu günlük üzerinde işlem yapma yetkiniz yok.",
+
+    "Permission:InternshipJournal": "Staj Günlüğü",
+    "Permission:Workplaces": "Çalışma Yerleri",
+    "Permission:Workplaces.Create": "Oluşturma",
+    "Permission:Workplaces.Edit": "Düzenleme",
+    "Permission:DailyLogs": "Günlükler",
+    "Permission:DailyLogs.Create": "Oluşturma",
+    "Permission:DailyLogs.Edit": "Düzenleme",
+    "Permission:DailyLogs.Submit": "Gönderme",
+    "Permission:Reviews": "Mentor İncelemeleri",
+    "Permission:Reviews.Approve": "Onaylama",
+    "Permission:Reviews.RequestRevision": "Düzeltme İsteme",
+    "Permission:Reports": "Raporlar",
+    "Permission:Administration": "Yönetim",
 
     "Home:GettingStarted": "Proje Hakkında",
     "Home:GettingStartedText": "Staj Günlüğü, staj çalışma yerlerini, stajyer profillerini ve günlük kayıtlarını takip eden bir ABP Framework uygulamasıdır.",

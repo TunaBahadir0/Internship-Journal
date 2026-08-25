@@ -1,7 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using InternshipJournal.Enums;
 using InternshipJournal.InternProfiles;
+using InternshipJournal.Permissions;
+using Microsoft.AspNetCore.Authorization;
 using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Domain.Entities;
@@ -9,6 +13,7 @@ using Volo.Abp.Users;
 
 namespace InternshipJournal.DailyLogs;
 
+[Authorize(InternshipJournalPermissions.DailyLogs.Default)]
 public class DailyLogAppService : InternshipJournalAppService, IDailyLogAppService
 {
     private readonly IDailyLogRepository _dailyLogRepository;
@@ -31,6 +36,8 @@ public class DailyLogAppService : InternshipJournalAppService, IDailyLogAppServi
     public async Task<DailyLogDetailDto> GetAsync(Guid id)
     {
         var dailyLog = await GetWithDetailsOrThrowAsync(id);
+
+        await EnsureCanViewAsync(dailyLog);
 
         return _mapper.MapToDailyLogDetailDto(dailyLog);
     }
@@ -60,6 +67,16 @@ public class DailyLogAppService : InternshipJournalAppService, IDailyLogAppServi
             items.Select(_mapper.MapToDailyLogDto).ToList());
     }
 
+    public async Task<List<DailyLogForReviewDto>> GetListForReviewAsync(DailyLogStatus? status = null)
+    {
+        var reviews = await _dailyLogRepository.GetListForMentorAsync(
+            CurrentUser.GetId(),
+            status ?? DailyLogStatus.Submitted);
+
+        return reviews.Select(_mapper.MapToDailyLogForReviewDto).ToList();
+    }
+
+    [Authorize(InternshipJournalPermissions.DailyLogs.Create)]
     public async Task<DailyLogDetailDto> CreateAsync(CreateDailyLogDto input)
     {
         var internProfile = await GetCurrentActiveInternProfileAsync();
@@ -68,23 +85,25 @@ public class DailyLogAppService : InternshipJournalAppService, IDailyLogAppServi
 
         await _dailyLogRepository.InsertAsync(dailyLog, autoSave: true);
 
-        return await GetAsync(dailyLog.Id);
+        return _mapper.MapToDailyLogDetailDto(dailyLog);
     }
 
+    [Authorize(InternshipJournalPermissions.DailyLogs.Edit)]
     public async Task<DailyLogDetailDto> UpdateSummaryAsync(Guid id, UpdateDailyLogSummaryDto input)
     {
-        var dailyLog = await _dailyLogRepository.GetAsync(id);
+        var dailyLog = await GetOwnedDailyLogAsync(id);
 
         dailyLog.ChangeSummary(input.Summary);
 
         await _dailyLogRepository.UpdateAsync(dailyLog, autoSave: true);
 
-        return await GetAsync(id);
+        return _mapper.MapToDailyLogDetailDto(dailyLog);
     }
 
+    [Authorize(InternshipJournalPermissions.DailyLogs.Edit)]
     public async Task<DailyLogDetailDto> AddItemAsync(Guid id, AddDailyLogItemInput input)
     {
-        var dailyLog = await GetWithDetailsOrThrowAsync(id);
+        var dailyLog = await GetOwnedDailyLogWithDetailsAsync(id);
 
         dailyLog.AddItem(input.Title, input.Description, input.WorkType, input.DurationMinutes, input.IsCompleted);
 
@@ -93,9 +112,10 @@ public class DailyLogAppService : InternshipJournalAppService, IDailyLogAppServi
         return _mapper.MapToDailyLogDetailDto(dailyLog);
     }
 
+    [Authorize(InternshipJournalPermissions.DailyLogs.Edit)]
     public async Task<DailyLogDetailDto> UpdateItemAsync(Guid id, Guid itemId, UpdateDailyLogItemInput input)
     {
-        var dailyLog = await GetWithDetailsOrThrowAsync(id);
+        var dailyLog = await GetOwnedDailyLogWithDetailsAsync(id);
 
         dailyLog.UpdateItem(itemId, input.Title, input.Description, input.WorkType, input.DurationMinutes, input.IsCompleted);
 
@@ -104,9 +124,10 @@ public class DailyLogAppService : InternshipJournalAppService, IDailyLogAppServi
         return _mapper.MapToDailyLogDetailDto(dailyLog);
     }
 
+    [Authorize(InternshipJournalPermissions.DailyLogs.Edit)]
     public async Task<DailyLogDetailDto> RemoveItemAsync(Guid id, Guid itemId)
     {
-        var dailyLog = await GetWithDetailsOrThrowAsync(id);
+        var dailyLog = await GetOwnedDailyLogWithDetailsAsync(id);
 
         dailyLog.RemoveItem(itemId);
 
@@ -115,9 +136,10 @@ public class DailyLogAppService : InternshipJournalAppService, IDailyLogAppServi
         return _mapper.MapToDailyLogDetailDto(dailyLog);
     }
 
+    [Authorize(InternshipJournalPermissions.DailyLogs.Edit)]
     public async Task<DailyLogDetailDto> AddSkillAsync(Guid id, AddDailyLogSkillInput input)
     {
-        var dailyLog = await GetWithDetailsOrThrowAsync(id);
+        var dailyLog = await GetOwnedDailyLogWithDetailsAsync(id);
 
         await _dailyLogManager.AddSkillAsync(dailyLog, input.SkillId, input.LearningLevel, input.Note);
 
@@ -126,9 +148,10 @@ public class DailyLogAppService : InternshipJournalAppService, IDailyLogAppServi
         return _mapper.MapToDailyLogDetailDto(dailyLog);
     }
 
+    [Authorize(InternshipJournalPermissions.DailyLogs.Edit)]
     public async Task<DailyLogDetailDto> UpdateSkillAsync(Guid id, Guid skillEntryId, UpdateDailyLogSkillInput input)
     {
-        var dailyLog = await GetWithDetailsOrThrowAsync(id);
+        var dailyLog = await GetOwnedDailyLogWithDetailsAsync(id);
 
         dailyLog.UpdateSkill(skillEntryId, input.LearningLevel, input.Note);
 
@@ -137,9 +160,10 @@ public class DailyLogAppService : InternshipJournalAppService, IDailyLogAppServi
         return _mapper.MapToDailyLogDetailDto(dailyLog);
     }
 
+    [Authorize(InternshipJournalPermissions.DailyLogs.Edit)]
     public async Task<DailyLogDetailDto> RemoveSkillAsync(Guid id, Guid skillEntryId)
     {
-        var dailyLog = await GetWithDetailsOrThrowAsync(id);
+        var dailyLog = await GetOwnedDailyLogWithDetailsAsync(id);
 
         dailyLog.RemoveSkill(skillEntryId);
 
@@ -148,9 +172,10 @@ public class DailyLogAppService : InternshipJournalAppService, IDailyLogAppServi
         return _mapper.MapToDailyLogDetailDto(dailyLog);
     }
 
+    [Authorize(InternshipJournalPermissions.DailyLogs.Edit)]
     public async Task<DailyLogDetailDto> AddProblemAsync(Guid id, AddProblemSolvingEntryInput input)
     {
-        var dailyLog = await GetWithDetailsOrThrowAsync(id);
+        var dailyLog = await GetOwnedDailyLogWithDetailsAsync(id);
 
         dailyLog.AddProblem(
             input.Title,
@@ -171,9 +196,10 @@ public class DailyLogAppService : InternshipJournalAppService, IDailyLogAppServi
         return _mapper.MapToDailyLogDetailDto(dailyLog);
     }
 
+    [Authorize(InternshipJournalPermissions.DailyLogs.Edit)]
     public async Task<DailyLogDetailDto> UpdateProblemAsync(Guid id, Guid problemId, UpdateProblemSolvingEntryInput input)
     {
-        var dailyLog = await GetWithDetailsOrThrowAsync(id);
+        var dailyLog = await GetOwnedDailyLogWithDetailsAsync(id);
 
         dailyLog.UpdateProblem(
             problemId,
@@ -195,9 +221,10 @@ public class DailyLogAppService : InternshipJournalAppService, IDailyLogAppServi
         return _mapper.MapToDailyLogDetailDto(dailyLog);
     }
 
+    [Authorize(InternshipJournalPermissions.DailyLogs.Edit)]
     public async Task<DailyLogDetailDto> RemoveProblemAsync(Guid id, Guid problemId)
     {
-        var dailyLog = await GetWithDetailsOrThrowAsync(id);
+        var dailyLog = await GetOwnedDailyLogWithDetailsAsync(id);
 
         dailyLog.RemoveProblem(problemId);
 
@@ -206,9 +233,10 @@ public class DailyLogAppService : InternshipJournalAppService, IDailyLogAppServi
         return _mapper.MapToDailyLogDetailDto(dailyLog);
     }
 
+    [Authorize(InternshipJournalPermissions.DailyLogs.Submit)]
     public async Task<DailyLogDetailDto> SubmitAsync(Guid id)
     {
-        var dailyLog = await GetWithDetailsOrThrowAsync(id);
+        var dailyLog = await GetOwnedDailyLogWithDetailsAsync(id);
 
         dailyLog.Submit();
 
@@ -217,31 +245,10 @@ public class DailyLogAppService : InternshipJournalAppService, IDailyLogAppServi
         return _mapper.MapToDailyLogDetailDto(dailyLog);
     }
 
-    public async Task<DailyLogDetailDto> RequestRevisionAsync(Guid id)
-    {
-        var dailyLog = await GetWithDetailsOrThrowAsync(id);
-
-        dailyLog.RequestRevision();
-
-        await _dailyLogRepository.UpdateAsync(dailyLog, autoSave: true);
-
-        return _mapper.MapToDailyLogDetailDto(dailyLog);
-    }
-
-    public async Task<DailyLogDetailDto> ApproveAsync(Guid id)
-    {
-        var dailyLog = await GetWithDetailsOrThrowAsync(id);
-
-        dailyLog.Approve();
-
-        await _dailyLogRepository.UpdateAsync(dailyLog, autoSave: true);
-
-        return _mapper.MapToDailyLogDetailDto(dailyLog);
-    }
-
+    [Authorize(InternshipJournalPermissions.DailyLogs.Edit)]
     public async Task<DailyLogDetailDto> ReturnToDraftAsync(Guid id)
     {
-        var dailyLog = await GetWithDetailsOrThrowAsync(id);
+        var dailyLog = await GetOwnedDailyLogWithDetailsAsync(id);
 
         dailyLog.ReturnToDraft();
 
@@ -254,6 +261,51 @@ public class DailyLogAppService : InternshipJournalAppService, IDailyLogAppServi
     {
         return await _dailyLogRepository.GetWithDetailsAsync(id)
             ?? throw new EntityNotFoundException(typeof(DailyLog), id);
+    }
+
+    /// <summary>
+    /// Günlüğü, yalnızca sahibi (kendi InternProfile.UserId'si CurrentUser ile eşleşen stajyer)
+    /// çağırıyorsa döndürür. Madde/yetkinlik/problem ekleme, özet güncelleme, gönderim gibi
+    /// tüm mutasyon metotları bunu kullanıyor — Gün 16'da bilerek ertelenen sahiplik kontrolü.
+    /// </summary>
+    private async Task<DailyLog> GetOwnedDailyLogWithDetailsAsync(Guid id)
+    {
+        var dailyLog = await GetWithDetailsOrThrowAsync(id);
+        await EnsureOwnerAsync(dailyLog);
+        return dailyLog;
+    }
+
+    private async Task<DailyLog> GetOwnedDailyLogAsync(Guid id)
+    {
+        var dailyLog = await _dailyLogRepository.GetAsync(id);
+        await EnsureOwnerAsync(dailyLog);
+        return dailyLog;
+    }
+
+    private async Task EnsureOwnerAsync(DailyLog dailyLog)
+    {
+        var internProfile = await _internProfileRepository.GetAsync(dailyLog.InternProfileId);
+
+        if (internProfile.UserId != CurrentUser.GetId())
+        {
+            throw new BusinessException(InternshipJournalDomainErrorCodes.DailyLogNotOwnedByCurrentUser);
+        }
+    }
+
+    /// <summary>
+    /// Görüntüleme, sahiplik kontrolünden daha gevşek: günlüğün sahibi stajyer YA DA
+    /// kendisine atanmış mentor görebilir (mentorun inceleme yapabilmesi için içeriği
+    /// görmesi gerekiyor).
+    /// </summary>
+    private async Task EnsureCanViewAsync(DailyLog dailyLog)
+    {
+        var internProfile = await _internProfileRepository.GetAsync(dailyLog.InternProfileId);
+        var currentUserId = CurrentUser.GetId();
+
+        if (internProfile.UserId != currentUserId && internProfile.MentorUserId != currentUserId)
+        {
+            throw new BusinessException(InternshipJournalDomainErrorCodes.DailyLogNotOwnedByCurrentUser);
+        }
     }
 
     private async Task<InternProfile> GetCurrentActiveInternProfileAsync()
