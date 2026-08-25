@@ -2,9 +2,14 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using InternshipJournal.DailyLogs;
+using InternshipJournal.Enums;
+using InternshipJournal.InternProfiles;
 using InternshipJournal.Locations;
+using InternshipJournal.MentorReviews;
 using InternshipJournal.Permissions;
 using InternshipJournal.Skills;
+using InternshipJournal.Workplaces;
 using Volo.Abp.Data;
 using Volo.Abp.Domain.Repositories;
 using Volo.Abp.DependencyInjection;
@@ -18,12 +23,27 @@ public class InternshipJournalDataSeedContributor : IDataSeedContributor, ITrans
     public const string InternRoleName = "Stajyer";
     public const string MentorRoleName = "Mentor";
 
+    // Demo/deneme kullanıcıları için sabit şifre - admin ile aynı, kullanıcının zaten bildiği bir değer.
+    private const string DemoUserPassword = "1q2w3E*";
+    private const string DemoInternUserName = "stajyer1";
+    private const string DemoMentorUserName = "mentor1";
+    private const string DemoWorkplaceName = "Örnek Yazılım A.Ş.";
+
     private readonly IRepository<Country, Guid> _countryRepository;
     private readonly IRepository<Province, Guid> _provinceRepository;
     private readonly IRepository<District, Guid> _districtRepository;
     private readonly IRepository<Skill, Guid> _skillRepository;
     private readonly IdentityRoleManager _roleManager;
     private readonly IPermissionManager _permissionManager;
+    private readonly IdentityUserManager _identityUserManager;
+    private readonly IWorkplaceRepository _workplaceRepository;
+    private readonly WorkplaceManager _workplaceManager;
+    private readonly IInternProfileRepository _internProfileRepository;
+    private readonly InternProfileManager _internProfileManager;
+    private readonly IDailyLogRepository _dailyLogRepository;
+    private readonly DailyLogManager _dailyLogManager;
+    private readonly IMentorReviewRepository _mentorReviewRepository;
+    private readonly MentorReviewManager _mentorReviewManager;
 
     public InternshipJournalDataSeedContributor(
         IRepository<Country, Guid> countryRepository,
@@ -31,7 +51,16 @@ public class InternshipJournalDataSeedContributor : IDataSeedContributor, ITrans
         IRepository<District, Guid> districtRepository,
         IRepository<Skill, Guid> skillRepository,
         IdentityRoleManager roleManager,
-        IPermissionManager permissionManager)
+        IPermissionManager permissionManager,
+        IdentityUserManager identityUserManager,
+        IWorkplaceRepository workplaceRepository,
+        WorkplaceManager workplaceManager,
+        IInternProfileRepository internProfileRepository,
+        InternProfileManager internProfileManager,
+        IDailyLogRepository dailyLogRepository,
+        DailyLogManager dailyLogManager,
+        IMentorReviewRepository mentorReviewRepository,
+        MentorReviewManager mentorReviewManager)
     {
         _countryRepository = countryRepository;
         _provinceRepository = provinceRepository;
@@ -39,6 +68,15 @@ public class InternshipJournalDataSeedContributor : IDataSeedContributor, ITrans
         _skillRepository = skillRepository;
         _roleManager = roleManager;
         _permissionManager = permissionManager;
+        _identityUserManager = identityUserManager;
+        _workplaceRepository = workplaceRepository;
+        _workplaceManager = workplaceManager;
+        _internProfileRepository = internProfileRepository;
+        _internProfileManager = internProfileManager;
+        _dailyLogRepository = dailyLogRepository;
+        _dailyLogManager = dailyLogManager;
+        _mentorReviewRepository = mentorReviewRepository;
+        _mentorReviewManager = mentorReviewManager;
     }
 
     public async Task SeedAsync(DataSeedContext context)
@@ -48,6 +86,7 @@ public class InternshipJournalDataSeedContributor : IDataSeedContributor, ITrans
         await SeedDistrictsAsync();
         await SeedSkillsAsync();
         await SeedRolesAsync();
+        await SeedDemoDataAsync();
     }
 
     private async Task SeedRolesAsync()
@@ -67,6 +106,163 @@ public class InternshipJournalDataSeedContributor : IDataSeedContributor, ITrans
             InternshipJournalPermissions.Reviews.Default,
             InternshipJournalPermissions.Reviews.Approve,
             InternshipJournalPermissions.Reviews.RequestRevision);
+    }
+
+    // Uçtan uca deneme yapılabilmesi için: bir stajyer, bir mentor, bir çalışma yeri, aktif bir
+    // staj profili ve taslak/gönderilmiş/onaylanmış birer örnek günlük. DbMigrator her çalıştığında
+    // idempotent şekilde kontrol eder (zaten varsa tekrar oluşturmaz).
+    private async Task SeedDemoDataAsync()
+    {
+        var internUser = await GetOrCreateDemoUserAsync(DemoInternUserName, "Ayşe", "Yılmaz", InternRoleName);
+        var mentorUser = await GetOrCreateDemoUserAsync(DemoMentorUserName, "Mehmet", "Demir", MentorRoleName);
+
+        var workplace = await GetOrCreateDemoWorkplaceAsync();
+
+        var internProfile = await GetOrCreateDemoInternProfileAsync(internUser.Id, mentorUser.Id, workplace.Id);
+
+        await SeedDraftDailyLogAsync(internProfile.Id, DateTime.Now.Date.AddDays(-2));
+        await SeedSubmittedDailyLogAsync(internProfile.Id, DateTime.Now.Date.AddDays(-1));
+        await SeedApprovedDailyLogAsync(internProfile.Id, mentorUser.Id, DateTime.Now.Date.AddDays(-7));
+    }
+
+    private async Task<IdentityUser> GetOrCreateDemoUserAsync(string userName, string name, string surname, string roleName)
+    {
+        var existing = await _identityUserManager.FindByNameAsync(userName);
+        if (existing != null)
+        {
+            return existing;
+        }
+
+        var user = new IdentityUser(Guid.NewGuid(), userName, $"{userName}@internshipjournal.local")
+        {
+            Name = name,
+            Surname = surname
+        };
+
+        var createResult = await _identityUserManager.CreateAsync(user, DemoUserPassword);
+        if (!createResult.Succeeded)
+        {
+            throw new InvalidOperationException(
+                $"'{userName}' kullanıcısı oluşturulamadı: {string.Join(", ", createResult.Errors.Select(x => x.Description))}");
+        }
+
+        var roleResult = await _identityUserManager.AddToRoleAsync(user, roleName);
+        if (!roleResult.Succeeded)
+        {
+            throw new InvalidOperationException(
+                $"'{userName}' kullanıcısına '{roleName}' rolü verilemedi: {string.Join(", ", roleResult.Errors.Select(x => x.Description))}");
+        }
+
+        return user;
+    }
+
+    private async Task<Workplace> GetOrCreateDemoWorkplaceAsync()
+    {
+        var existing = await _workplaceRepository.FindByNameAsync(DemoWorkplaceName);
+        if (existing != null)
+        {
+            return existing;
+        }
+
+        var workplace = await _workplaceManager.CreateAsync(
+            DemoWorkplaceName,
+            InternshipJournalSeedIds.Districts.Kadikoy,
+            "Örnek Mahallesi, Test Caddesi No:1",
+            postalCode: "34710",
+            taxNumber: null,
+            phone: "02121234567",
+            email: "info@ornekyazilim.com",
+            website: "https://www.ornekyazilim.com",
+            latitude: null,
+            longitude: null);
+
+        await _workplaceRepository.InsertAsync(workplace, autoSave: true);
+        return workplace;
+    }
+
+    private async Task<InternProfile> GetOrCreateDemoInternProfileAsync(Guid internUserId, Guid mentorUserId, Guid workplaceId)
+    {
+        var existing = await _internProfileRepository.FindByUserIdAsync(internUserId);
+        if (existing != null)
+        {
+            return existing;
+        }
+
+        var period = new DateRange(DateTime.Now.Date.AddMonths(-3), DateTime.Now.Date.AddMonths(9));
+        var profile = await _internProfileManager.CreateAsync(
+            internUserId,
+            mentorUserId,
+            workplaceId,
+            "Örnek Üniversitesi",
+            "Bilgisayar Mühendisliği",
+            "20210001",
+            period,
+            60);
+
+        profile.Start();
+
+        await _internProfileRepository.InsertAsync(profile, autoSave: true);
+        return profile;
+    }
+
+    private async Task SeedDraftDailyLogAsync(Guid internProfileId, DateTime logDate)
+    {
+        if (await _dailyLogRepository.ExistsForDateAsync(internProfileId, logDate))
+        {
+            return;
+        }
+
+        var log = await _dailyLogManager.CreateAsync(internProfileId, logDate, "İlk staj günüm, ortam kurulumu ve tanışma.");
+        log.AddItem("Geliştirme ortamı kurulumu", "Visual Studio ve .NET SDK kurulumu yapıldı.", WorkType.Setup, 120, true);
+        log.AddItem("Ekip tanışma toplantısı", null, WorkType.Meeting, 60, true);
+        await _dailyLogManager.AddSkillAsync(log, InternshipJournalSeedIds.Skills.Git, LearningLevel.Introduced, "Temel git komutlarını öğrendim.");
+
+        await _dailyLogRepository.InsertAsync(log, autoSave: true);
+    }
+
+    private async Task SeedSubmittedDailyLogAsync(Guid internProfileId, DateTime logDate)
+    {
+        if (await _dailyLogRepository.ExistsForDateAsync(internProfileId, logDate))
+        {
+            return;
+        }
+
+        var log = await _dailyLogManager.CreateAsync(internProfileId, logDate, "API endpoint geliştirme.");
+        log.AddItem("Kullanıcı listeleme endpoint'i", "GET /api/users uç noktası eklendi.", WorkType.Development, 180, true);
+        log.AddItem("Unit testleri yazma", null, WorkType.Testing, 90, true);
+        log.AddProblem(
+            "Migration hatası",
+            "EF Core migration eklerken FK hatası aldım.",
+            errorMessage: "The ADD CONSTRAINT statement conflicted with the FOREIGN KEY constraint.",
+            attemptedSolutions: "Migration'ı silip yeniden oluşturdum.",
+            rootCause: "Yanlış tabloya FK eklemiştim.",
+            finalSolution: "Doğru tabloya FK ekleyip migration'ı yeniden oluşturdum.",
+            usedArtificialIntelligence: true,
+            aiToolName: "Claude",
+            aiPromptSummary: "EF Core FK constraint hatasının olası nedenlerini sordum.",
+            aiSuggestion: "Migration dosyasındaki FK tanımını ve tablo adını kontrol etmemi önerdi.",
+            aiSuggestionAccepted: true,
+            aiRejectionReason: null);
+        log.Submit();
+
+        await _dailyLogRepository.InsertAsync(log, autoSave: true);
+    }
+
+    private async Task SeedApprovedDailyLogAsync(Guid internProfileId, Guid mentorUserId, DateTime logDate)
+    {
+        if (await _dailyLogRepository.ExistsForDateAsync(internProfileId, logDate))
+        {
+            return;
+        }
+
+        var log = await _dailyLogManager.CreateAsync(internProfileId, logDate, "Veritabanı şeması tasarımı.");
+        log.AddItem("ER diyagramı çizimi", "Ana tablolar ve ilişkiler belirlendi.", WorkType.Research, 150, true);
+        log.Submit();
+        await _dailyLogRepository.InsertAsync(log, autoSave: true);
+
+        var (review, approvedLog) = await _mentorReviewManager.ApproveAsync(log.Id, mentorUserId, "Güzel bir başlangıç, devam et.");
+        await _mentorReviewRepository.InsertAsync(review, autoSave: true);
+        await _dailyLogRepository.UpdateAsync(approvedLog, autoSave: true);
     }
 
     private async Task<IdentityRole> GetOrCreateRoleAsync(string name)
