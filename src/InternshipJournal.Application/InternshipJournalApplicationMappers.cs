@@ -1,6 +1,7 @@
 using InternshipJournal.DailyLogs;
 using InternshipJournal.InternProfiles;
 using InternshipJournal.Locations;
+using InternshipJournal.Skills;
 using InternshipJournal.Workplaces;
 using Riok.Mapperly.Abstractions;
 using Volo.Abp.Mapperly;
@@ -37,4 +38,6 @@ public partial class InternshipJournalApplicationMappers
     public partial DailyLogSkillDto Map(DailyLogSkill source);
 
     public partial ProblemSolvingEntryDto Map(ProblemSolvingEntry source);
+
+    public partial SkillLookupDto Map(Skill source);
 }

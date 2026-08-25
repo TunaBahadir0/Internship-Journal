@@ -7,4 +7,5 @@ public class InternshipJournalMenus
     public const string Workplaces = Prefix + ".Workplaces";
     public const string InternProfiles = Prefix + ".InternProfiles";
     public const string MyProfile = Prefix + ".MyProfile";
+    public const string DailyLogs = Prefix + ".DailyLogs";
 }
