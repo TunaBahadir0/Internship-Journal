@@ -29,10 +29,12 @@ public class CreateInternProfileDto
 
     [Required]
     [DataType(DataType.Date)]
+    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
     public DateTime InternshipStartDate { get; set; }
 
     [Required]
     [DataType(DataType.Date)]
+    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
     public DateTime InternshipEndDate { get; set; }
 
     [Range(1, int.MaxValue)]
