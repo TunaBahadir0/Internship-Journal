@@ -54,7 +54,7 @@ public class CreateModel : InternshipJournalPageModel
         }
         catch (BusinessException ex)
         {
-            ModelState.AddModelError(string.Empty, ex.Message);
+            ModelState.AddModelError(string.Empty, GetErrorMessage(ex));
             await PopulateSelectListsAsync();
             return Page();
         }

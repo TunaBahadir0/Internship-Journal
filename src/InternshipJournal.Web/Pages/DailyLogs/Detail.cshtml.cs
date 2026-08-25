@@ -158,7 +158,7 @@ public class DetailModel : InternshipJournalPageModel
         }
         catch (BusinessException ex)
         {
-            TempData["DailyLogError"] = ex.Message;
+            TempData["DailyLogError"] = GetErrorMessage(ex);
         }
 
         return RedirectToPage(new { id = Id });

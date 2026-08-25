@@ -56,7 +56,7 @@ public class IndexModel : InternshipJournalPageModel
         }
         catch (BusinessException ex)
         {
-            ErrorMessage = ex.Message;
+            ErrorMessage = GetErrorMessage(ex);
         }
     }
 }
