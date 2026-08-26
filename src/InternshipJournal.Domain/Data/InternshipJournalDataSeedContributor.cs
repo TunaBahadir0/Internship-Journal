@@ -108,21 +108,60 @@ public class InternshipJournalDataSeedContributor : IDataSeedContributor, ITrans
             InternshipJournalPermissions.Reviews.RequestRevision);
     }
 
-    // Uçtan uca deneme yapılabilmesi için: bir stajyer, bir mentor, bir çalışma yeri, aktif bir
-    // staj profili ve taslak/gönderilmiş/onaylanmış birer örnek günlük. DbMigrator her çalıştığında
-    // idempotent şekilde kontrol eder (zaten varsa tekrar oluşturmaz).
+    // Uçtan uca deneme/test yapılabilmesi için üç senaryo seed ediliyor:
+    //   1) Aktif bir stajyerin taslak + gönderilmiş + onaylanmış günlükleri (stajyer1/mentor1).
+    //   2) Düzeltme istenip düzeltildikten sonra tekrar gönderilen bir günlük - RevisionRequested
+    //      akışını ve inceleme geçmişini göstermek için (stajyer2/mentor2, ayrı bir işyerinde).
+    //   3) mentor1'e bağlı, stajı tamamlanmış (Completed) ikinci bir stajyer (stajyer3) - bir
+    //      mentörün birden fazla stajyeri olabildiğini ve tamamlanmış bir profilin durumunu gösteriyor.
+    //
+    // Günlük tarihleri DateTime.Now'dan DEĞİL, ilgili profilin kendi InternshipPeriod.StartDate'inden
+    // sabit gün farkıyla türetiliyor. Önceki sürüm DateTime.Now.Date.AddDays(-N) kullanıyordu; bu,
+    // DbMigrator farklı bir takvim gününde tekrar çalıştığında ExistsForDateAsync kontrolünün hep
+    // "yok" dönmesine ve her çalıştırmada aynı üç günlüğün tekrar tekrar eklenmesine yol açan gerçek
+    // bir bug'dı (idempotent olması gerekirken değildi). Profilin StartDate'i bir kez oluşturulduktan
+    // sonra veritabanında sabit kaldığı için, ona göre türetilen tarihler de her çalıştırmada aynı
+    // kalıyor ve ExistsForDateAsync artık gerçekten "zaten var" diyebiliyor.
     private async Task SeedDemoDataAsync()
     {
-        var internUser = await GetOrCreateDemoUserAsync(DemoInternUserName, "Ayşe", "Yılmaz", InternRoleName);
-        var mentorUser = await GetOrCreateDemoUserAsync(DemoMentorUserName, "Mehmet", "Demir", MentorRoleName);
+        var mentor1 = await GetOrCreateDemoUserAsync(DemoMentorUserName, "Mehmet", "Demir", MentorRoleName);
+        var mentor2 = await GetOrCreateDemoUserAsync("mentor2", "Zeynep", "Arslan", MentorRoleName);
 
-        var workplace = await GetOrCreateDemoWorkplaceAsync();
+        var workplace1 = await GetOrCreateDemoWorkplaceAsync(
+            DemoWorkplaceName,
+            InternshipJournalSeedIds.Districts.Kadikoy,
+            "Örnek Mahallesi, Test Caddesi No:1",
+            "34710",
+            "02121234567",
+            "info@ornekyazilim.com",
+            "https://www.ornekyazilim.com");
 
-        var internProfile = await GetOrCreateDemoInternProfileAsync(internUser.Id, mentorUser.Id, workplace.Id);
+        var workplace2 = await GetOrCreateDemoWorkplaceAsync(
+            "Beta Teknoloji Ltd. Şti.",
+            InternshipJournalSeedIds.Districts.Uskudar,
+            "Beta Mahallesi, İnovasyon Caddesi No:7",
+            "34664",
+            "02163334455",
+            "info@betateknoloji.com",
+            "https://www.betateknoloji.com");
 
-        await SeedDraftDailyLogAsync(internProfile.Id, DateTime.Now.Date.AddDays(-2));
-        await SeedSubmittedDailyLogAsync(internProfile.Id, DateTime.Now.Date.AddDays(-1));
-        await SeedApprovedDailyLogAsync(internProfile.Id, mentorUser.Id, DateTime.Now.Date.AddDays(-7));
+        var intern1 = await GetOrCreateDemoUserAsync(DemoInternUserName, "Ayşe", "Yılmaz", InternRoleName);
+        var profile1 = await GetOrCreateDemoInternProfileAsync(
+            intern1.Id, mentor1.Id, workplace1.Id,
+            "Örnek Üniversitesi", "Bilgisayar Mühendisliği", "20210001", requiredWorkDays: 60);
+        await SeedDraftSubmittedApprovedLogsAsync(profile1, mentor1.Id);
+
+        var intern2 = await GetOrCreateDemoUserAsync("stajyer2", "Elif", "Kaya", InternRoleName);
+        var profile2 = await GetOrCreateDemoInternProfileAsync(
+            intern2.Id, mentor2.Id, workplace2.Id,
+            "Örnek Üniversitesi", "Yazılım Mühendisliği", "20210002", requiredWorkDays: 40);
+        await SeedRevisionRequestedThenResubmittedLogAsync(profile2, mentor2.Id);
+
+        var intern3 = await GetOrCreateDemoUserAsync("stajyer3", "Can", "Öztürk", InternRoleName);
+        var profile3 = await GetOrCreateDemoInternProfileAsync(
+            intern3.Id, mentor1.Id, workplace1.Id,
+            "Örnek Üniversitesi", "Bilgisayar Mühendisliği", "20200099", requiredWorkDays: 60);
+        await SeedCompletedInternshipAsync(profile3, mentor1.Id);
     }
 
     private async Task<IdentityUser> GetOrCreateDemoUserAsync(string userName, string name, string surname, string roleName)
@@ -156,23 +195,30 @@ public class InternshipJournalDataSeedContributor : IDataSeedContributor, ITrans
         return user;
     }
 
-    private async Task<Workplace> GetOrCreateDemoWorkplaceAsync()
+    private async Task<Workplace> GetOrCreateDemoWorkplaceAsync(
+        string name,
+        Guid districtId,
+        string addressLine,
+        string postalCode,
+        string phone,
+        string email,
+        string website)
     {
-        var existing = await _workplaceRepository.FindByNameAsync(DemoWorkplaceName);
+        var existing = await _workplaceRepository.FindByNameAsync(name);
         if (existing != null)
         {
             return existing;
         }
 
         var workplace = await _workplaceManager.CreateAsync(
-            DemoWorkplaceName,
-            InternshipJournalSeedIds.Districts.Kadikoy,
-            "Örnek Mahallesi, Test Caddesi No:1",
-            postalCode: "34710",
+            name,
+            districtId,
+            addressLine,
+            postalCode: postalCode,
             taxNumber: null,
-            phone: "02121234567",
-            email: "info@ornekyazilim.com",
-            website: "https://www.ornekyazilim.com",
+            phone: phone,
+            email: email,
+            website: website,
             latitude: null,
             longitude: null);
 
@@ -180,7 +226,14 @@ public class InternshipJournalDataSeedContributor : IDataSeedContributor, ITrans
         return workplace;
     }
 
-    private async Task<InternProfile> GetOrCreateDemoInternProfileAsync(Guid internUserId, Guid mentorUserId, Guid workplaceId)
+    private async Task<InternProfile> GetOrCreateDemoInternProfileAsync(
+        Guid internUserId,
+        Guid mentorUserId,
+        Guid workplaceId,
+        string university,
+        string schoolDepartment,
+        string studentNumber,
+        int requiredWorkDays)
     {
         var existing = await _internProfileRepository.FindByUserIdAsync(internUserId);
         if (existing != null)
@@ -193,16 +246,34 @@ public class InternshipJournalDataSeedContributor : IDataSeedContributor, ITrans
             internUserId,
             mentorUserId,
             workplaceId,
-            "Örnek Üniversitesi",
-            "Bilgisayar Mühendisliği",
-            "20210001",
+            university,
+            schoolDepartment,
+            studentNumber,
             period,
-            60);
+            requiredWorkDays);
 
         profile.Start();
 
         await _internProfileRepository.InsertAsync(profile, autoSave: true);
         return profile;
+    }
+
+    private async Task SeedDraftSubmittedApprovedLogsAsync(InternProfile internProfile, Guid mentorUserId)
+    {
+        // Profil daha önce (ör. admin ekranından elle) Completed/Cancelled durumuna alınmış olabilir -
+        // DailyLogManager sadece Active bir profil için günlük oluşturulmasına izin veriyor, bu yüzden
+        // burada da önce durumu kontrol ediyoruz; aksi halde profil zaten Active değilken günlük
+        // eklemeye çalışmak BusinessException fırlatıp DbMigrator'ı tamamen durdururdu.
+        if (internProfile.Status != InternshipStatus.Active)
+        {
+            return;
+        }
+
+        var periodStart = internProfile.InternshipPeriod.StartDate;
+
+        await SeedDraftDailyLogAsync(internProfile.Id, periodStart.AddDays(10));
+        await SeedSubmittedDailyLogAsync(internProfile.Id, periodStart.AddDays(11));
+        await SeedApprovedDailyLogAsync(internProfile.Id, mentorUserId, periodStart.AddDays(3));
     }
 
     private async Task SeedDraftDailyLogAsync(Guid internProfileId, DateTime logDate)
@@ -263,6 +334,68 @@ public class InternshipJournalDataSeedContributor : IDataSeedContributor, ITrans
         var (review, approvedLog) = await _mentorReviewManager.ApproveAsync(log.Id, mentorUserId, "Güzel bir başlangıç, devam et.");
         await _mentorReviewRepository.InsertAsync(review, autoSave: true);
         await _dailyLogRepository.UpdateAsync(approvedLog, autoSave: true);
+    }
+
+    // Düzeltme isteniyor, stajyer düzeltip tekrar gönderiyor: günlük yeniden Submitted durumunda
+    // kalıyor ama inceleme geçmişinde bir RevisionRequested kaydı görünüyor - mentörün "tekrar
+    // incele" akışını ve stajyerin düzeltme geçmişini görebildiği ekranı test etmek için.
+    private async Task SeedRevisionRequestedThenResubmittedLogAsync(InternProfile internProfile, Guid mentorUserId)
+    {
+        if (internProfile.Status != InternshipStatus.Active)
+        {
+            return;
+        }
+
+        var logDate = internProfile.InternshipPeriod.StartDate.AddDays(5);
+
+        if (await _dailyLogRepository.ExistsForDateAsync(internProfile.Id, logDate))
+        {
+            return;
+        }
+
+        var log = await _dailyLogManager.CreateAsync(internProfile.Id, logDate, "Kullanıcı arayüzü ekranları.");
+        log.AddItem("Giriş ekranı tasarımı", "Statik HTML/CSS ile giriş ekranı hazırlandı.", WorkType.Development, 150, true);
+        await _dailyLogManager.AddSkillAsync(log, InternshipJournalSeedIds.Skills.HtmlCss, LearningLevel.Practiced, "Flexbox ile düzen kurmayı öğrendim.");
+        log.Submit();
+        await _dailyLogRepository.InsertAsync(log, autoSave: true);
+
+        var (revisionReview, revisedLog) = await _mentorReviewManager.RequestRevisionAsync(
+            log.Id, mentorUserId, "Giriş ekranında form doğrulama mesajları eksik, lütfen ekleyip tekrar gönder.");
+        await _mentorReviewRepository.InsertAsync(revisionReview, autoSave: true);
+        await _dailyLogRepository.UpdateAsync(revisedLog, autoSave: true);
+
+        revisedLog.ReturnToDraft();
+        revisedLog.AddItem("Form doğrulama mesajları", "Boş alan ve geçersiz e-posta uyarıları eklendi.", WorkType.Development, 60, true);
+        revisedLog.Submit();
+        await _dailyLogRepository.UpdateAsync(revisedLog, autoSave: true);
+    }
+
+    // Stajı biten bir stajyer: bir günlüğü onaylanmış, profili Completed durumunda.
+    private async Task SeedCompletedInternshipAsync(InternProfile internProfile, Guid mentorUserId)
+    {
+        var logDate = internProfile.InternshipPeriod.StartDate.AddDays(2);
+
+        if (internProfile.Status == InternshipStatus.Active
+            && !await _dailyLogRepository.ExistsForDateAsync(internProfile.Id, logDate))
+        {
+            var log = await _dailyLogManager.CreateAsync(internProfile.Id, logDate, "Kapanış raporu ve devir teslim.");
+            log.AddItem("Devir teslim dokümantasyonu", "Kalan işler ve notlar sonraki stajyere aktarıldı.", WorkType.Documentation, 90, true);
+            log.Submit();
+            await _dailyLogRepository.InsertAsync(log, autoSave: true);
+
+            var (review, approvedLog) = await _mentorReviewManager.ApproveAsync(
+                log.Id, mentorUserId, "Staj boyunca gösterdiğin gelişim için teşekkürler.");
+            await _mentorReviewRepository.InsertAsync(review, autoSave: true);
+            await _dailyLogRepository.UpdateAsync(approvedLog, autoSave: true);
+        }
+
+        // Profil zaten Completed ise (önceki bir çalıştırmada tamamlanmışsa) Complete()'i tekrar
+        // çağırıp BusinessException almamak için durumu kontrol ediyoruz.
+        if (internProfile.Status == InternshipStatus.Active)
+        {
+            internProfile.Complete();
+            await _internProfileRepository.UpdateAsync(internProfile, autoSave: true);
+        }
     }
 
     private async Task<IdentityRole> GetOrCreateRoleAsync(string name)
