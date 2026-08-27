@@ -1,0 +1,6 @@
+**/bin/
+**/obj/
+**/.vs/
+**/Logs/
+.git/
+node_modules/
