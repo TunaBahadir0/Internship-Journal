@@ -1,20 +1,27 @@
 services:
-  postgres:
-    image: postgres:16
-    container_name: internshipjournal-postgres
+  # Uses your existing native PostgreSQL install (localhost:5432, already has the seeded data).
+  # host.docker.internal lets containers reach services running on the host machine.
+  dbmigrator:
+    build:
+      context: .
+      dockerfile: src/InternshipJournal.DbMigrator/Dockerfile
     environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: myPassword
-      POSTGRES_DB: InternshipJournal
-    ports:
-      - "5432:5432"
-    volumes:
-      - internshipjournal-postgres-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U root -d InternshipJournal"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+      ConnectionStrings__Default: "Host=host.docker.internal;Port=5432;Database=InternshipJournal;User ID=postgres;Password=StajGunlugu2026!;"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
-volumes:
-  internshipjournal-postgres-data:
+  web:
+    build:
+      context: .
+      dockerfile: src/InternshipJournal.Web/Dockerfile
+    depends_on:
+      dbmigrator:
+        condition: service_completed_successfully
+    environment:
+      ConnectionStrings__Default: "Host=host.docker.internal;Port=5432;Database=InternshipJournal;User ID=postgres;Password=StajGunlugu2026!;"
+      App__SelfUrl: "http://localhost:44300"
+      ASPNETCORE_URLS: "http://+:8080"
+    ports:
+      - "44300:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
